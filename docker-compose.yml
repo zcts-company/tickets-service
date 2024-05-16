@@ -1,0 +1,11 @@
+version: '3.2'
+services:
+  tickets-service:
+    build:
+      dockerfile: Dockerfile
+    volumes:
+      - D:/ZCTS/zcts-ticket-services/files:/var/ZCTS/zcts-ticket-services/files
+networks:
+  default:
+    external:
+      name: zcts_default   

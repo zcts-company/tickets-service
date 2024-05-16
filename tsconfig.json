@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "outDir": "build",
+      "target": "es6",
+      "module": "es2020",
+      "sourceMap": true , 
+      "moduleResolution":"node",
+      "isolatedModules": true,
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports":true,
+      "extendedDiagnostics":true,
+      "strict": true,
+  },
+  "include": ["./src/**/*"],
+  "exclude":["node_modules",".vscode","files"]
+}
