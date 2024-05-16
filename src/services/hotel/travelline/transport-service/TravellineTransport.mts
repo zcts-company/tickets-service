@@ -24,11 +24,11 @@ export class TravellineTransport {
                             const exists:boolean = await fs.pathExists(`${this.directory1C}${fileName}`)
                 
                             if(exists){
-                                console.log(`File ${fileName} sended to directory: ${this.directory1C}`);
+                                console.log(`[TRAVELLINE TRANSPORT] File ${fileName} sended to directory: ${this.directory1C}`);
                                 await this.sendToArchive(currentArchive,fileName)
                             }
                     }catch {
-                        throw new Error(`Directory ${this.directory1C} not exists or not available`);
+                        throw new Error(`[TRAVELLINE TRANSPORT] Directory ${this.directory1C} not exists or not available`);
                         
                     }
             })
@@ -45,7 +45,7 @@ export class TravellineTransport {
         await fs.copy(this.currentDirectory + fileName,currentArchive + fileName);
         const exists:boolean = await fs.pathExists(`${currentArchive}${fileName}`)
         if(exists){
-            console.log(`File ${fileName} sended to archive directory: ${currentArchive}`);
+            console.log(`[TRAVELLINE TRANSPORT] File ${fileName} sended to archive directory: ${currentArchive}`);
             await this.removeFileFromCurrent(fileName)
       }
 
@@ -55,7 +55,7 @@ export class TravellineTransport {
        await fs.remove(`${this.currentDirectory}${fileName}`)
        const exist:boolean = await fs.pathExists(`${this.currentDirectory}${fileName}`)
             if(!exist){
-                console.log(`File ${fileName} removed from current directory: ${this.currentDirectory}`);
+                console.log(`[TRAVELLINE TRANSPORT] File ${fileName} removed from current directory: ${this.currentDirectory}`);
             }
     }
 

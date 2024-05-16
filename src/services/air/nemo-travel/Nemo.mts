@@ -7,7 +7,7 @@ export class Nemo implements AirService {
 
     run(dateFrom: Date, dateTo: Date): void {
         
-        console.log(`Step nemo travel: orders from ${dateFrom.toLocaleDateString()} to ${dateTo.toLocaleString()}`);
+        console.log(`[NEMO TRAVEL] Step nemo travel: orders from ${dateFrom.toLocaleDateString()} to ${dateTo.toLocaleString()}`);
         
     }
 

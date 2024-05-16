@@ -29,7 +29,7 @@ export class HotelServiceDb {
         async getAllReservations(){
             this.pool.query('SELECT * FROM orders_type_hotel WHERE reservation notNull', async (err:any, res:any) => {
                 if (err) {
-                  console.error(err);
+                  console.error(`[DATABASE SERVICE] ${err}`);
                   return 'Error query';
                 }    
                      await this.checkAndSetReservationCache(res.rows)
@@ -52,7 +52,7 @@ export class HotelServiceDb {
                         LEFT JOIN orders_type_hotel h ON h.id = o.id
                         WHERE o.updated > '${from}' AND o.updated < '${to}' AND h.reservation notNull and o.service = '${config.service.name}'`, async (err:any, res:any) => {
             if (err) {
-              console.error(err);
+              console.error(`[DATABASE SERVICE] ${err}`)
               return 'Error query';
             }    
             
@@ -71,11 +71,12 @@ export class HotelServiceDb {
     private checkDate(dateFrom:Date){
       
       if(this.currentDate < dateFrom){
+            console.log(`[DATABASE SERVICE] start process of cleared cache of date ${this.currentDate} `);
             this.reservationCache.clearCache()
-              console.log(`Cache of date ${this.currentDate} cleared`);
+            console.log(`[DATABASE SERVICE] Cache of date ${this.currentDate} cleared`);
             
             this.currentDate = new Date(dateFrom);
-              console.log(`Current date of cache setted ${this.currentDate}`);
+            console.log(`[DATABASE SERVICE] Current date of cache setted ${this.currentDate}`);
       }
 
     }
@@ -91,7 +92,7 @@ export class HotelServiceDb {
                     }
                 }
             })
-            console.log(`rows from database ${rows.length} setting to cashe ${count} reservation`);         
+            console.log(`[DATABASE SERVICE] Date: ${this.currentDate}. Rows from database ${rows.length} setting to caсhe ${count} reservation`);         
         }
 
     }

@@ -4,7 +4,7 @@ import { FileConverterXml } from "../../../common/converter/FileConverterXml.mjs
 import { HotelServiceDb } from "../../database/HotelServiceDb.mjs";
 import { HotelService } from "../interfaces/HotelService.mjs";
 import { HotelWebService } from "../interfaces/HotelWebService.mjs";
-import {config} from "./config/config.mjs" //assert { type: "json" };
+import {config} from "./config/config.mjs"
 import { TravellineFileService } from "./file-service/TravellineFileService.mjs";
 import { TravellineTransport } from "./transport-service/TravellineTransport.mjs";
 import { BookingResponse } from "./types/BookingResponse.mjs";
@@ -39,7 +39,7 @@ export class Travelline implements HotelService{
 
 
     async run(dateFrom: Date, dateTo: Date) {
-        console.log(`Service ${config.name} recent request to check reservation from date ${dateFrom} to date ${dateTo}`);     
+        console.log(`[TRAVELLINE] Service ${config.name} recent request to check reservation from date ${dateFrom} to date ${dateTo}`);     
         
         this.currentArhivePath = `${this.arhiveDirectory}${dateTo.toLocaleDateString().replace(new RegExp('[./]', 'g'),"-")}/`;
         const directoryArhiveExist:boolean = await this.fileService.pathExsist(this.currentArhivePath);
@@ -47,12 +47,12 @@ export class Travelline implements HotelService{
         
         if(!directoryArhiveExist){
             await this.fileService.createDirectory(this.currentArhivePath)
-            console.log(`Directory created: ${this.currentArhivePath}`);
+            console.log(`[TRAVELLINE] Directory created: ${this.currentArhivePath}`);
         }
 
         if(!directoryCurrentExist){
             await this.fileService.createDirectory(this.currentDirectory)
-            console.log(`Directory created: ${this.currentDirectory}`);
+            console.log(`[TRAVELLINE] Directory created: ${this.currentDirectory}`);
         }
         
         const reservationFromBase:HotelCache = await this.database.getReservationsByDate(dateFrom,dateTo);
@@ -80,7 +80,7 @@ export class Travelline implements HotelService{
         const path = `${this.currentDirectory}${fileName}.xml`
         this.fileService.writeFile(path,res).then(() => {
             
-            console.log(`File with name ${fileName}.xml created in directory: ${this.currentDirectory}`);
+            console.log(`[TRAVELLINE] File with name ${fileName}.xml created in directory: ${this.currentDirectory}`);
             
         })
     }
