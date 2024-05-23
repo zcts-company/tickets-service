@@ -3,8 +3,11 @@ services:
   tickets-service:
     build:
       dockerfile: Dockerfile
+    
     volumes:
-      - D:/ZCTS/zcts-ticket-services/files:/var/ZCTS/zcts-ticket-services/files
+      - D:/tickets/files/:/tmp/tickets/files/
+    ports:
+      - 48659:48659
 networks:
   default:
     external:

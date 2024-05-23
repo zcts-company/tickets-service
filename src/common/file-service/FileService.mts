@@ -1,7 +1,7 @@
 import fs from "fs-extra"
 
 
-export class TravellineFileService {
+export class FileService {
 
     constructor(){
 

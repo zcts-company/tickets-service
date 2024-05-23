@@ -1,11 +1,12 @@
 
 import { HotelCache } from "../../../common/cache/HotelCache.mjs";
 import { FileConverterXml } from "../../../common/converter/FileConverterXml.mjs";
+import { FileService } from "../../../common/file-service/FileService.mjs";
+import { hotelCacheTravelline } from "../../../config/services.mjs";
 import { HotelServiceDb } from "../../database/HotelServiceDb.mjs";
 import { HotelService } from "../interfaces/HotelService.mjs";
 import { HotelWebService } from "../interfaces/HotelWebService.mjs";
 import {config} from "./config/config.mjs"
-import { TravellineFileService } from "./file-service/TravellineFileService.mjs";
 import { TravellineTransport } from "./transport-service/TravellineTransport.mjs";
 import { BookingResponse } from "./types/BookingResponse.mjs";
 import { TravellineWebService } from "./web-service/TravellineWebService.mjs";
@@ -15,20 +16,24 @@ export class Travelline implements HotelService{
     private database:HotelServiceDb
     private webService:HotelWebService
     private converter: FileConverterXml
-    private fileService:TravellineFileService;
+    private fileService:FileService;
     private transportService:TravellineTransport;
     private currentDirectory:string
     private arhiveDirectory:string
     private currentArhivePath:string | undefined
+    private directory1C:string
+    private currentDate:Date;
 
     constructor(){
-        this.database = new HotelServiceDb(config.database.orders);
+        this.database = new HotelServiceDb(config.database.orders,hotelCacheTravelline);
         this.webService = new TravellineWebService();
         this.converter = new FileConverterXml();
-        this.fileService = new TravellineFileService();
+        this.fileService = new FileService();
         this.transportService = new TravellineTransport()
         this.currentDirectory = config.fileOutput.path
         this.arhiveDirectory = config.fileArhive.path
+        this.directory1C = config.directory1C.path
+        this.currentDate = new Date() 
 
     }
 
@@ -39,12 +44,14 @@ export class Travelline implements HotelService{
 
 
     async run(dateFrom: Date, dateTo: Date) {
+        this.checkDate(dateFrom)
         console.log(`[TRAVELLINE] Service ${config.name} recent request to check reservation from date ${dateFrom} to date ${dateTo}`);     
         
         this.currentArhivePath = `${this.arhiveDirectory}${dateTo.toLocaleDateString().replace(new RegExp('[./]', 'g'),"-")}/`;
         const directoryArhiveExist:boolean = await this.fileService.pathExsist(this.currentArhivePath);
         const directoryCurrentExist:boolean = await this.fileService.pathExsist(this.currentDirectory);
-        
+        const directory1CExist:boolean = await this.fileService.pathExsist(this.directory1C);
+
         if(!directoryArhiveExist){
             await this.fileService.createDirectory(this.currentArhivePath)
             console.log(`[TRAVELLINE] Directory created: ${this.currentArhivePath}`);
@@ -54,6 +61,11 @@ export class Travelline implements HotelService{
             await this.fileService.createDirectory(this.currentDirectory)
             console.log(`[TRAVELLINE] Directory created: ${this.currentDirectory}`);
         }
+
+        if(!directory1CExist){
+            await this.fileService.createDirectory(this.directory1C)
+            console.log(`[TRAVELLINE] Directory created: ${this.directory1C}`);
+        }
         
         const reservationFromBase:HotelCache = await this.database.getReservationsByDate(dateFrom,dateTo);
         this.checkReservation(reservationFromBase.getCache()).then((list) => {
@@ -62,6 +74,20 @@ export class Travelline implements HotelService{
         });
         
     }
+
+    private checkDate(dateFrom:Date){
+      
+        if(this.currentDate < dateFrom){
+              console.log(`[TRAVELLINE] start process of cleared cache of date ${this.currentDate} `);
+              hotelCacheTravelline.clearCache()
+              console.log(`[TRAVELLINE] Cache of date ${this.currentDate} cleared`);
+              console.log(`[TRAVELLINE] rows in cache: ${hotelCacheTravelline.getCache().keys()}`);
+
+              this.currentDate = new Date(dateFrom);
+              console.log(`[TRAVELLINE] Current date of cache setted ${this.currentDate}`);
+        }
+  
+      }
 
 
     requestToWebService(listReservation: Map<string, any>) {

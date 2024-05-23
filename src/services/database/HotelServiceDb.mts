@@ -12,18 +12,18 @@ export class HotelServiceDb {
     private pool;
     private currentDate:Date;
 
-    constructor(databaseName:string){
+    constructor(databaseName:string, cache:HotelCache){
             this.pool = new Pool({
                 user:config.login,
                 password:config.password,
                 database:databaseName,
-                host:config.docker_host,
+                host:config.docker_host, //change for place of deploy
                 port:config.port,
                 max: 2
             }) 
-            this.reservationCache = new HotelCache(); 
+            this.reservationCache = cache; 
             this.currentDate = new Date() 
-            console.log(`Current date of cache setted ${this.currentDate}`);
+            
         }
 
         async getAllReservations(){
@@ -70,13 +70,8 @@ export class HotelServiceDb {
 
     private checkDate(dateFrom:Date){
       
-      if(this.currentDate < dateFrom){
-            console.log(`[DATABASE SERVICE] start process of cleared cache of date ${this.currentDate} `);
-            this.reservationCache.clearCache()
-            console.log(`[DATABASE SERVICE] Cache of date ${this.currentDate} cleared`);
-            
+      if(this.currentDate < dateFrom){ 
             this.currentDate = new Date(dateFrom);
-            console.log(`[DATABASE SERVICE] Current date of cache setted ${this.currentDate}`);
       }
 
     }
