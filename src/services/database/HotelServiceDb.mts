@@ -4,6 +4,7 @@ const Pool =  pg.Pool;
 import {config} from "./config/db.mjs" //assert { type: "json" };;
 import { HotelCache } from "../../common/cache/HotelCache.mjs";
 import { toDateForSQL } from "../../util/dateFunction.mjs";
+import { logger } from "../../common/logging/Logger.mjs";
 
 
 export class HotelServiceDb {
@@ -17,7 +18,7 @@ export class HotelServiceDb {
                 user:config.login,
                 password:config.password,
                 database:databaseName,
-                host:config.docker_host, //change for place of deploy
+                host:config.localhost, //change for place of deploy
                 port:config.port,
                 max: 2
             }) 
@@ -29,7 +30,7 @@ export class HotelServiceDb {
         async getAllReservations(){
             this.pool.query('SELECT * FROM orders_type_hotel WHERE reservation notNull', async (err:any, res:any) => {
                 if (err) {
-                  console.error(`[DATABASE SERVICE] ${err}`);
+                  logger.error(`[DATABASE SERVICE] ${err}`);
                   return 'Error query';
                 }    
                      await this.checkAndSetReservationCache(res.rows)
@@ -52,7 +53,7 @@ export class HotelServiceDb {
                         LEFT JOIN orders_type_hotel h ON h.id = o.id
                         WHERE o.updated > '${from}' AND o.updated < '${to}' AND h.reservation notNull and o.service = '${config.service.name}'`, async (err:any, res:any) => {
             if (err) {
-              console.error(`[DATABASE SERVICE] ${err}`)
+              logger.error(`[DATABASE SERVICE] ${err}`)
               return 'Error query';
             }    
             
@@ -87,7 +88,7 @@ export class HotelServiceDb {
                     }
                 }
             })
-            console.log(`[DATABASE SERVICE] Date: ${this.currentDate}. Rows from database ${rows.length} setting to caсhe ${count} reservation`);         
+            logger.info(`[DATABASE SERVICE] Date: ${toDateForSQL(this.currentDate)}. Rows from database ${rows.length} setting to cache ${count} reservation`);         
         }
 
     }

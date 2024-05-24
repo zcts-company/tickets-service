@@ -5,7 +5,7 @@
   "main": "app.ts",
   "type": "module",
   "scripts": {
-    "start": "node --experimental-specifier-resolution=node  --loader ts-node/esm ./src/app.ts",
+    "start": "node --experimental-specifier-resolution=node  --loader ts-node/esm ./src/app.ts | npx pino-pretty",
     "build": "tsc --build"
   },
   "author": "Kirill_Chystsin",
@@ -29,6 +29,8 @@
     "fs-extra": "^11.2.0",
     "joi": "^17.13.1",
     "pg": "^8.11.5",
+    "pino": "^9.1.0",
+    "pino-pretty": "^11.1.0",
     "xml-js": "^1.6.11"
   }
 }

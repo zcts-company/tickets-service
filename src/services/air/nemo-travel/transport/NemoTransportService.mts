@@ -1,5 +1,6 @@
 import fs from "fs-extra"
 import {config} from "../config/config.mjs"
+import { logger } from "../../../../common/logging/Logger.mjs"
 
 
 export class NemoTransportService {
@@ -25,10 +26,11 @@ export class NemoTransportService {
                             const exists:boolean = await fs.pathExists(`${this.directory1C}${fileName}`)
                 
                             if(exists){
-                                console.log(`[NEMOTRAVEL TRANSPORT] File ${fileName} sended to directory: ${this.directory1C}`);
+                                logger.info(`[NEMOTRAVEL TRANSPORT] File ${fileName} sended to directory: ${this.directory1C}`);
                                 await this.sendToArchive(currentArchive,fileName)
                             }
                     }catch {
+                        logger.error(`[NEMOTRAVEL TRANSPORT] Directory ${this.directory1C} not exists or not available`)
                         throw new Error(`[NEMOTRAVEL TRANSPORT] Directory ${this.directory1C} not exists or not available`);
                         
                     }
@@ -43,18 +45,20 @@ export class NemoTransportService {
 
         await fs.copy(this.currentDirectory + fileName,currentArchive + fileName);
         const exists:boolean = await fs.pathExists(`${currentArchive}${fileName}`)
+        
         if(exists){
-            console.log(`[TRAVELLINE TRANSPORT] File ${fileName} sended to archive directory: ${currentArchive}`);
+            logger.info(`[TRAVELLINE TRANSPORT] File ${fileName} sended to archive directory: ${currentArchive}`);
             await this.removeFileFromCurrent(fileName)
-      }
+        }
 
     }
 
     private async removeFileFromCurrent(fileName:string){
        await fs.remove(`${this.currentDirectory}${fileName}`)
        const exist:boolean = await fs.pathExists(`${this.currentDirectory}${fileName}`)
+           
             if(!exist){
-                console.log(`[NEMOTRAVEL TRANSPORT] File ${fileName} removed from current directory: ${this.currentDirectory}`);
+                logger.info(`[NEMOTRAVEL TRANSPORT] File ${fileName} removed from current directory: ${this.currentDirectory}`);
             }
     }
 

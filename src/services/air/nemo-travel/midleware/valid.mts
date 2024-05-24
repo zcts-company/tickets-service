@@ -1,22 +1,26 @@
 import { Request, Response } from "express";
+import { logger } from "../../../../common/logging/Logger.mjs";
+import { log } from "console";
 
 export const valid = (req:Request,res:Response,next:any) => {
 
     if (!req.body) { 
+        logger.warn('Not body exists')
         throw 'Not body exists'
     } 
 
     if (!req.body.validated) {
-        throw 'Must be validated'
+        logger.warn('Body must be validated')
+        throw 'Body must be validated'
     }
 
     if(req.body.joiError){
         res.status(400);
+        logger.warn(`Error validate: ${req.body.joiError}`)
         throw req.body.joiError;
     }
-
-    console.log("[NEMO TRAVEL] validation succseful");
     res.status(200);
+    logger.info("[NEMO TRAVEL] validation successful");
     
     next();
 }

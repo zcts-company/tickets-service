@@ -1,13 +1,12 @@
 import { BEARER } from "../../../../common/constants/constant";
+import { logger } from "../../../../common/logging/Logger.mjs";
 
 
 const auth = () => {
 
     return (req:any,res:any,next:any) => {
-        console.log('====================================');
-        console.log(`Request: ${req}`);
-        console.log("Autorization not implemented");
-        console.log('====================================');
+        logger.info('Request from NemoBackOffice. Middleware autorization')
+        logger.warn("Autorization not implemented")
         // const authHeader = req.header('Authorization');
         // if(authHeader && authHeader.startsWith(BEARER)){
         //     const accessToken = authHeader.substring(BEARER.length);

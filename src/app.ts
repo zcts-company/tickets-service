@@ -3,6 +3,7 @@ import { TicketService } from "./services/interfaces/TicketService.mjs";
 import { toDateForSQL } from "./util/dateFunction.mjs";
 import {config} from "./config/config.mjs"
 import express from "express"
+import { logger } from "./common/logging/Logger.mjs";
 
 let counter = 0;
 let time = 0
@@ -11,7 +12,7 @@ let dateFrom:Date;
 let dateTo:Date;
 
 setSearchDate();
-console.log(`[MAIN APP] Start tickets service`);
+logger.info(`[MAIN APP] Start tickets service`)
 
 nemoTavelServer.startServer(config.nemo.server.port)
 
@@ -21,10 +22,9 @@ nemoTavelServer.startServer(config.nemo.server.port)
         time += 10000;
        
         services.forEach(async (service:TicketService) => {
-            console.log(`[MAIN APP] Step number ${counter} time: ${time/1000} sec [service name ${service.getServiceName()}]`);            
-
+            logger.trace(`[MAIN APP] Step number ${counter} [service name ${service.getServiceName()}]`)
             if(Date.now() > dateTo.getTime()){
-                console.log(`[MAIN APP] start process of changing the current date `);
+                logger.info(`[MAIN APP] start process of changing the current date`)
                 setSearchDate()
             }
 
@@ -42,6 +42,7 @@ nemoTavelServer.startServer(config.nemo.server.port)
         dateFrom = new Date(now.getFullYear(),now.getMonth(),now.getDate(),0,0,0,1)
         dateTo = new Date(now.getFullYear(),now.getMonth(),now.getDate(),23,59,59,0)
         nemoTavelServer.setCurrentArchiveDirectory(dateTo)
-        console.log(`[MAIN APP] Current date for search reservation setted: from ${toDateForSQL(dateFrom)} to ${toDateForSQL(dateTo)}`);
+        
+        logger.info(`[MAIN APP] Current date for search reservation setted: from ${toDateForSQL(dateFrom)} to ${toDateForSQL(dateTo)}`)
         
     }

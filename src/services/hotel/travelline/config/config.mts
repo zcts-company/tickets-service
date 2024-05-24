@@ -10,13 +10,13 @@ export const config = {
         orders:"corporate"
     },
     fileOutput:{
-        path:`${mainPathDocker}current/`
+        path:`${mainPathLocalWindows}current/`
     },
     fileArhive:{
-        path:`${mainPathDocker}archive/`
+        path:`${mainPathLocalWindows}archive/`
     },
     directory1C:{
-        path:`${mainPathDocker}directory1C/`
+        path:`${mainPathLocalWindows}directory1C/`
     },
     baseUrl:"https://partner.qatl.ru/api/",
     reseration:"reservation/v1/bookings/",

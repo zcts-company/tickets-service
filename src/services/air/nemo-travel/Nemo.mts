@@ -9,6 +9,7 @@ import cors from 'cors'
 import { NemoTransportService } from "./transport/NemoTransportService.mjs";
 import setArchivePath from "./midleware/SetArchivePath.mjs";
 import errorHandler from "../../../common/middleware/errorHandler.mjs";
+import { logger } from "../../../common/logging/Logger.mjs";
 
 
 export class Nemo implements AirServiceServer {
@@ -45,21 +46,21 @@ export class Nemo implements AirServiceServer {
 
         if(!directoryArhiveExist){
             await this.fileService.createDirectory(this.archiveDirectory)
-            console.log(`[NEMO TRAVEL] Directory created: ${this.archiveDirectory}`);
+            logger.info(`[NEMO TRAVEL] Directory created: ${this.archiveDirectory}`);
         }
 
         if(!directoryCurrentExist){
             await this.fileService.createDirectory(this.currentDirectory)
-            console.log(`[NEMO TRAVEL] Directory created: ${this.currentDirectory}`);
+            logger.info(`[NEMO TRAVEL] Directory created: ${this.currentDirectory}`);
         }
 
         if(!directory1CExist){
             await this.fileService.createDirectory(this.directory1C)
-            console.log(`[NEMO TRAVEL] Directory created: ${this.directory1C}`);
+            logger.info(`[NEMO TRAVEL] Directory created: ${this.directory1C}`);
         }
           
          this.server.listen(port,() => {
-                console.log(`[NEMO TRAVEL] Server Nemo travel tickets listening on port ${port}`);
+                logger.info(`[NEMO TRAVEL] Server Nemo travel tickets listening on port ${port}`);
                 this.server.use(errorHandler);
          });
 
@@ -67,7 +68,7 @@ export class Nemo implements AirServiceServer {
         this.server.use("/nemo/service",service)
 
         setInterval(() => {
-            console.log(`[NEMO TRAVEL] Step transport service`);
+            logger.trace(`[NEMO TRAVEL] Step transport service of nemo travel`);
             this.transport.sendTo1C(this.currentArchiveDirectory)
 
         },config.intervalSending * 1000)
@@ -78,15 +79,15 @@ export class Nemo implements AirServiceServer {
         // for tests
         // dateFrom = new Date(2024,4,15,0,0,0,1)
         // dateTo = new Date(2024,4,15,23,59,59,0)
-        console.log(`[NEMO TRAVEL] Server recived date from archive path: ${date}`);
+        logger.info(`[NEMO TRAVEL] Server recived date from archive path: ${date.toLocaleDateString()}`);
         this.currentArchiveDirectory = `${config.fileArhive.path}${date.toLocaleDateString().replace(new RegExp('[./]', 'g'),"-")}/`;
-        console.log(`[NEMO TRAVEL] Cerrent archive path setted: ${this.currentArchiveDirectory}`);
+        logger.info(`[NEMO TRAVEL] Cerrent archive path setted: ${this.currentArchiveDirectory}`);
         
         const directoryArhiveExist:boolean = await this.fileService.pathExsist(this.currentArchiveDirectory);
         
         if(!directoryArhiveExist){
             await this.fileService.createDirectory(this.currentArchiveDirectory)
-            console.log(`[NEMO TRAVEL] Directory created by server methods: ${this.currentArchiveDirectory}`);
+            logger.info(`[NEMO TRAVEL] Directory created by server methods: ${this.currentArchiveDirectory}`);
         }
     
     }

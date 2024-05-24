@@ -2,7 +2,9 @@
 import { HotelCache } from "../../../common/cache/HotelCache.mjs";
 import { FileConverterXml } from "../../../common/converter/FileConverterXml.mjs";
 import { FileService } from "../../../common/file-service/FileService.mjs";
+import { logger } from "../../../common/logging/Logger.mjs";
 import { hotelCacheTravelline } from "../../../config/services.mjs";
+import { toDateForSQL } from "../../../util/dateFunction.mjs";
 import { HotelServiceDb } from "../../database/HotelServiceDb.mjs";
 import { HotelService } from "../interfaces/HotelService.mjs";
 import { HotelWebService } from "../interfaces/HotelWebService.mjs";
@@ -45,7 +47,7 @@ export class Travelline implements HotelService{
 
     async run(dateFrom: Date, dateTo: Date) {
         this.checkDate(dateFrom)
-        console.log(`[TRAVELLINE] Service ${config.name} recent request to check reservation from date ${dateFrom} to date ${dateTo}`);     
+        logger.trace(`[TRAVELLINE] Service ${config.name} recent request to check reservation from date ${toDateForSQL(dateFrom)} to date ${toDateForSQL(dateTo)}`);     
         
         this.currentArhivePath = `${this.arhiveDirectory}${dateTo.toLocaleDateString().replace(new RegExp('[./]', 'g'),"-")}/`;
         const directoryArhiveExist:boolean = await this.fileService.pathExsist(this.currentArhivePath);
@@ -54,17 +56,17 @@ export class Travelline implements HotelService{
 
         if(!directoryArhiveExist){
             await this.fileService.createDirectory(this.currentArhivePath)
-            console.log(`[TRAVELLINE] Directory created: ${this.currentArhivePath}`);
+            logger.info(`[TRAVELLINE] Directory created: ${this.currentArhivePath}`);
         }
 
         if(!directoryCurrentExist){
             await this.fileService.createDirectory(this.currentDirectory)
-            console.log(`[TRAVELLINE] Directory created: ${this.currentDirectory}`);
+            logger.info(`[TRAVELLINE] Directory created: ${this.currentDirectory}`);
         }
 
         if(!directory1CExist){
             await this.fileService.createDirectory(this.directory1C)
-            console.log(`[TRAVELLINE] Directory created: ${this.directory1C}`);
+            logger.info(`[TRAVELLINE] Directory created: ${this.directory1C}`);
         }
         
         const reservationFromBase:HotelCache = await this.database.getReservationsByDate(dateFrom,dateTo);
@@ -78,13 +80,13 @@ export class Travelline implements HotelService{
     private checkDate(dateFrom:Date){
       
         if(this.currentDate < dateFrom){
-              console.log(`[TRAVELLINE] start process of cleared cache of date ${this.currentDate} `);
+              logger.info(`[TRAVELLINE] start process of cleared cache of date ${this.currentDate} `);
               hotelCacheTravelline.clearCache()
-              console.log(`[TRAVELLINE] Cache of date ${this.currentDate} cleared`);
-              console.log(`[TRAVELLINE] rows in cache: ${hotelCacheTravelline.getCache().keys()}`);
+              logger.info(`[TRAVELLINE] Cache of date ${this.currentDate} cleared`);
+              logger.info(`[TRAVELLINE] rows in cache: ${hotelCacheTravelline.getCache().keys()}`);
 
               this.currentDate = new Date(dateFrom);
-              console.log(`[TRAVELLINE] Current date of cache setted ${this.currentDate}`);
+              logger.info(`[TRAVELLINE] Current date of cache setted ${this.currentDate}`);
         }
   
       }
@@ -106,7 +108,7 @@ export class Travelline implements HotelService{
         const path = `${this.currentDirectory}${fileName}.xml`
         this.fileService.writeFile(path,res).then(() => {
             
-            console.log(`[TRAVELLINE] File with name ${fileName}.xml created in directory: ${this.currentDirectory}`);
+            logger.info(`[TRAVELLINE] File with name ${fileName}.xml created in directory: ${this.currentDirectory}`);
             
         })
     }

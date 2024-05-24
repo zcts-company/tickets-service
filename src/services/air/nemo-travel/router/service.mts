@@ -8,6 +8,7 @@ import { NemoOrder } from "../model/NemoOrder.mjs";
 import { validation } from "../../../../common/validation/validation.mjs";
 import { nemoOrder } from "../shemas/NemoOrder.mjs";
 import valid from "../midleware/valid.mjs";
+import { logger } from "../../../../common/logging/Logger.mjs";
 
 export const service = express.Router();
 const fileService = new FileService();
@@ -18,17 +19,17 @@ service.use(validation(nemoOrder))
 
 service.use('',asyncHandler(
     async (req:any,res:Response,next) => {
-        console.log(`[NEMO TRAVEL] Check current archive path, path of service: ${req.currentArchivePath}`);
+        logger.info(`[NEMO TRAVEL] Check current archive path, path of service: ${req.currentArchivePath}`)
     if(req.currentArchivePath){
         
         const directoryArhiveExist:boolean = await fileService.pathExsist(req.currentArchivePath);
         
         if(!directoryArhiveExist){
             await fileService.createDirectory(req.currentArchivePath)
-            console.log(`[NEMO TRAVEL] Directory created by middlware of service: ${req.currentArchivePath}`);
+            logger.info(`[NEMO TRAVEL] Directory created by middlware of service: ${req.currentArchivePath}`);
         }
     } else {
-        console.log(`[NEMO TRAVEL] Imposible created directory: ${req.currentArchivePath}`);
+        logger.error(`[NEMO TRAVEL] Imposible created directory: ${req.currentArchivePath}`);
     }
         
         next()
@@ -36,7 +37,7 @@ service.use('',asyncHandler(
 ))
 
 service.post('/create',auth(),valid,asyncHandler(async(req:any, res:Response) => {
-    console.log(`[NEMO TRAVEL] Resived post request for create reservation file: ${req.body}`);
+    logger.trace(`[NEMO TRAVEL] Resived post request for create reservation file: ${req.body}`);
 
    try {
     const updated = new Date(req.body.data.lastModifiedDate);
@@ -51,22 +52,22 @@ service.post('/create',auth(),valid,asyncHandler(async(req:any, res:Response) =>
                     await fileService.pathExsist(path);
                     res.status(200);
                     res.send()
-                    console.log(`[NEMO TRAVEL] send response to nemo server 200`);
+                    logger.info(`[NEMO TRAVEL] send response to nemo server ${res.statusCode}`);
                 } else {
-                    console.log(`[NEMO TRAVEL] file with name ${fileName} exists in directory ${currentDirectory}`);
+                    logger.warn(`[NEMO TRAVEL] file with name ${fileName} exists in directory ${currentDirectory}`);
                     res.status(200);
                     res.send({fileExistsToCerrent:existToCurrent})
                 }
 
             } else {
-                console.log(`[NEMO TRAVEL] file with name ${fileName} exists in directory ${req.currentArchivePath}`);
+                logger.warn(`[NEMO TRAVEL] file with name ${fileName} exists in directory ${req.currentArchivePath}`);
                 res.status(200);
                 res.send({fileExistsToArchive:existToArchive})
             }
            
    } catch (error) {
         res.status(500);
-        console.log(`[NEMO TRAVEL] send response to nemo server 500`);
+        logger.error(`[NEMO TRAVEL] send response to nemo server ${res.statusCode}`);
         res.send()
    }
   
@@ -80,7 +81,7 @@ async function createFile(order:NemoOrder, response:Response) {
     const path = `${currentDirectory}${fileName}.xml`
     fileService.writeFile(path,res).then(() => {
         
-        console.log(`[NEMO TRAVEL] File with name ${fileName}.xml created in directory: ${currentDirectory}`);
+        logger.info(`[NEMO TRAVEL] File with name ${fileName}.xml created in directory: ${currentDirectory}`);
         
     })
 
