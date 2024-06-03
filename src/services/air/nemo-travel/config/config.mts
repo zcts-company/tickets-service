@@ -1,5 +1,6 @@
 const mainPathLocalWindows:string = "D:/tickets/files/nemo/"
 const mainPathDocker:string = "/tmp/tickets/files/nemo/"
+const path:string = mainPathDocker
 
 export const config = {
     name:"Nemo travel ticket service",
@@ -9,13 +10,13 @@ export const config = {
     intervalSending:5, // interval seconds
     
     fileOutput:{
-        path:`${mainPathLocalWindows}current/`
+        path:`${path}current/`
     },
     fileArhive:{
-        path:`${mainPathLocalWindows}archive/`
+        path:`${path}archive/`
     },
     directory1C:{
-        path:`${mainPathLocalWindows}directory1C/`
+        path:`${path}directory1C/`
     }
 
 }

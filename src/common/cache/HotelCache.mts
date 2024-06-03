@@ -2,9 +2,11 @@
 export class HotelCache {
 
     private cache:Map<string,any>;
+    private providerName:string;
 
-    constructor(){
+    constructor(providerName:string){
         this.cache = new Map()
+        this.providerName = providerName;
     }
 
     getCache(){
@@ -25,6 +27,10 @@ export class HotelCache {
 
     clearCache(){
         this.cache.clear();
+    }
+
+    getProviderName(){
+        return this.providerName;
     }
 
 }

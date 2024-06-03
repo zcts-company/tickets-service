@@ -1,6 +1,6 @@
 import { HotelWebService } from "../../interfaces/HotelWebService.mjs"
 import { BookingResponse } from "../types/BookingResponse.mjs"
-import {config} from "../config/config.mjs" //assert { type: "json" };;
+import config from "../config/config.mjs" //assert { type: "json" };;
 import { logger } from "../../../../common/logging/Logger.mjs";
 
 export class TravellineWebService implements HotelWebService {

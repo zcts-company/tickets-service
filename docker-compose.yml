@@ -3,11 +3,13 @@ services:
   tickets-service:
     build:
       dockerfile: Dockerfile
-    
+
     volumes:
       - D:/tickets/files/:/tmp/tickets/files/
     ports:
       - 48659:48659
+    environment:   
+      PINO_LOG_LEVEL: trace 
 networks:
   default:
     external:

@@ -8,7 +8,7 @@ import { toDateForSQL } from "../../../util/dateFunction.mjs";
 import { HotelServiceDb } from "../../database/HotelServiceDb.mjs";
 import { HotelService } from "../interfaces/HotelService.mjs";
 import { HotelWebService } from "../interfaces/HotelWebService.mjs";
-import {config} from "./config/config.mjs"
+import config from "./config/config.mjs"
 import { TravellineTransport } from "./transport-service/TravellineTransport.mjs";
 import { BookingResponse } from "./types/BookingResponse.mjs";
 import { TravellineWebService } from "./web-service/TravellineWebService.mjs";
@@ -27,7 +27,7 @@ export class Travelline implements HotelService{
     private currentDate:Date;
 
     constructor(){
-        this.database = new HotelServiceDb(config.database.orders,hotelCacheTravelline);
+        this.database = new HotelServiceDb(config.database.orders,hotelCacheTravelline,config.checkUpdates);
         this.webService = new TravellineWebService();
         this.converter = new FileConverterXml();
         this.fileService = new FileService();

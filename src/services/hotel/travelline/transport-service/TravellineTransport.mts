@@ -1,5 +1,5 @@
 import fs from "fs-extra"
-import {config} from "../config/config.mjs" //assert { type: "json" };
+import config from "../config/config.mjs" //assert { type: "json" };
 import { logger } from "../../../../common/logging/Logger.mjs"
 
 

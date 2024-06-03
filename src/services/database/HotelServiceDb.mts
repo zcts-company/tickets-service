@@ -12,18 +12,20 @@ export class HotelServiceDb {
     private reservationCache:HotelCache;
     private pool;
     private currentDate:Date;
+    private checkUpdate:boolean;
 
-    constructor(databaseName:string, cache:HotelCache){
+    constructor(databaseName:string, cache:HotelCache, checkUpdate:boolean){
             this.pool = new Pool({
                 user:config.login,
                 password:config.password,
                 database:databaseName,
-                host:config.localhost, //change for place of deploy
+                host:config.host,
                 port:config.port,
                 max: 2
             }) 
             this.reservationCache = cache; 
             this.currentDate = new Date() 
+            this.checkUpdate = checkUpdate;
             
         }
 
@@ -44,14 +46,16 @@ export class HotelServiceDb {
        async getReservationsByDate(dateFrom:Date, dateTo:Date){
         let from = toDateForSQL(dateFrom)
         let to = toDateForSQL(dateTo)
-        this.pool.query(`SELECT 
-                            o.id,
-                            o.locator,
-                            o.updated,
-                            h.reservation
-                        FROM orders o
-                        LEFT JOIN orders_type_hotel h ON h.id = o.id
-                        WHERE o.updated > '${from}' AND o.updated < '${to}' AND h.reservation notNull and o.service = '${config.service.name}'`, async (err:any, res:any) => {
+
+        const query:string = `SELECT o.id,
+                                     o.locator,
+                                     o.updated,
+                                     h.reservation
+                              FROM orders o
+                              LEFT JOIN orders_type_hotel h ON h.id = o.id
+                              WHERE o.${this.checkUpdate ? 'updated' : 'created'} > '${from}' AND o.${this.checkUpdate ? 'updated' : 'created'} < '${to}' AND h.reservation notNull and o.service = '${config.service.name}'`
+        logger.trace(`[DATABASE SERVICE] Starting query for database. QUERY: ${query}`)
+        this.pool.query(query, async (err:any, res:any) => {
             if (err) {
               logger.error(`[DATABASE SERVICE] ${err}`)
               return 'Error query';
@@ -80,6 +84,8 @@ export class HotelServiceDb {
     private async checkAndSetReservationCache(rows:any[]){
             let count:number = 0;
             rows.forEach((row) => {
+              if(row.reservation.provider.includes(this.reservationCache.getProviderName())){
+                
                 if(row.reservation.locator){
                   const reservation = this.reservationCache.getItem(row.reservation.locator);
                     if(!reservation || (row.updated > reservation.updated) ){
@@ -87,6 +93,9 @@ export class HotelServiceDb {
                         count++;
                     }
                 }
+
+              }
+               
             })
             logger.info(`[DATABASE SERVICE] Date: ${toDateForSQL(this.currentDate)}. Rows from database ${rows.length} setting to cache ${count} reservation`);         
         }

@@ -6,4 +6,4 @@ COPY ./package.json /package.json
 COPY ./package-lock.json /package-lock.json
 RUN npm install  
 
-CMD ["node", "build/app.js | npx pino-pretty"]
+CMD ["npm","run","startprod"]
