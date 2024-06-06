@@ -97,7 +97,7 @@ export class HotelServiceDb {
               }
                
             })
-            logger.info(`[DATABASE SERVICE] Date: ${toDateForSQL(this.currentDate)}. Rows from database ${rows.length} setting to cache ${count} reservation`);         
+            logger.trace(`[DATABASE SERVICE] Date: ${toDateForSQL(this.currentDate)}. Rows from database ${rows.length} setting to cache ${count} reservation`);         
         }
 
     }

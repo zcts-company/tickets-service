@@ -36,7 +36,7 @@ export class Travelline implements HotelService{
         this.arhiveDirectory = config.fileArhive.path
         this.directory1C = config.directory1C.path
         this.currentDate = new Date() 
-
+        logger.info(`[TRAVELLINE] Service ${config.name} created instance and started. Date: ${toDateForSQL(this.currentDate)}`);
     }
 
 

@@ -20,14 +20,16 @@ nemoTavelServer.startServer(config.nemo.server.port)
     setInterval(() => {
         counter++;
         time += 10000;
-       
+
+        if(Date.now() > dateTo.getTime()){
+            logger.info(`[MAIN APP] start process of changing the current date`)
+            setSearchDate()
+        } else{
+            logger.trace(`[MAIN APP] current date not need changing`)
+        }
+
         services.forEach(async (service:TicketService) => {
             logger.trace(`[MAIN APP] Step number ${counter} [service name ${service.getServiceName()}]`)
-            if(Date.now() > dateTo.getTime()){
-                logger.info(`[MAIN APP] start process of changing the current date`)
-                setSearchDate()
-            }
-
             service.run(dateFrom,dateTo);
         })
     },config.interval * 1000)
