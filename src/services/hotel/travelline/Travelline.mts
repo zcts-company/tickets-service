@@ -1,4 +1,5 @@
 
+import express from "express";
 import { HotelCache } from "../../../common/cache/HotelCache.mjs";
 import { FileConverterXml } from "../../../common/converter/FileConverterXml.mjs";
 import { FileService } from "../../../common/file-service/FileService.mjs";
@@ -12,9 +13,15 @@ import config from "./config/config.mjs"
 import { TravellineTransport } from "./transport-service/TravellineTransport.mjs";
 import { BookingResponse } from "./types/BookingResponse.mjs";
 import { TravellineWebService } from "./web-service/TravellineWebService.mjs";
+import cors from "cors";
+import bodyParser from "body-parser";
+import { HotelServer } from "../interfaces/HotelServer.mjs";
+import errorHandler from "../../../common/middleware/errorHandler.mjs";
+import { handService } from "./router/HandService.mjs";
 
-export class Travelline implements HotelService{
+export class Travelline implements HotelService,HotelServer{
 
+    private server:any;
     private database:HotelServiceDb
     private webService:HotelWebService
     private converter: FileConverterXml
@@ -27,6 +34,11 @@ export class Travelline implements HotelService{
     private currentDate:Date;
 
     constructor(){
+        this.server = express();
+        this.server.use(cors())
+        this.server.use(bodyParser.urlencoded({extended: true}));
+        this.server.use(bodyParser.json());
+
         this.database = new HotelServiceDb(config.database.orders,hotelCacheTravelline,config.checkUpdates);
         this.webService = new TravellineWebService();
         this.converter = new FileConverterXml();
@@ -37,6 +49,20 @@ export class Travelline implements HotelService{
         this.directory1C = config.directory1C.path
         this.currentDate = new Date() 
         logger.info(`[TRAVELLINE] Service ${config.name} created instance and started. Date: ${toDateForSQL(this.currentDate)}`);
+    }
+    startServer(port: Number): void {
+
+        this.server.listen(port,() => {
+            logger.info(`[TRAVELLINE] Server travelline hand tickets listening on port ${port}`);
+            this.server.use(errorHandler);
+     });
+
+    this.server.use("/travelline/service",handService)
+
+        
+    }
+    setCurrentArchiveDirectory(date: Date): void {
+        throw new Error("Method not implemented.");
     }
 
 
@@ -72,7 +98,8 @@ export class Travelline implements HotelService{
         const reservationFromBase:HotelCache = await this.database.getReservationsByDate(dateFrom,dateTo);
         this.checkReservation(reservationFromBase.getCache()).then((list) => {
             this.requestToWebService(list)
-            this.transportService.sendTo1C(this.currentArhivePath);
+            //this.transportService.sendTo1C(this.currentArhivePath);
+            this.transportService.sendTo1CSamba(this.currentArhivePath);
         });
         
     }
@@ -104,7 +131,7 @@ export class Travelline implements HotelService{
 
     private createFile(reservationData: BookingResponse, key:string, updated:Date) {
         const res:string = this.converter.jsonToXml(reservationData);
-        const fileName = this.nameOfFile(key,updated);
+        const fileName = nameOfFile(key,updated);
         const path = `${this.currentDirectory}${fileName}.xml`
         this.fileService.writeFile(path,res).then(() => {
             
@@ -120,7 +147,7 @@ export class Travelline implements HotelService{
 
         for (let index = 0; index < arrayOfkeys.length; index++) {
             const reservation = reservationFromBase.get(arrayOfkeys[index])
-            const fileName = this.nameOfFile(arrayOfkeys[index],reservation.updated)
+            const fileName = nameOfFile(arrayOfkeys[index],reservation.updated)
 
             const existArchive:boolean = await this.fileService.pathExsist(this.currentArhivePath + `${fileName}.xml`);
             if(!existArchive){
@@ -134,21 +161,21 @@ export class Travelline implements HotelService{
         return result;
     }
 
+    
+}
 
-    nameOfFile(key:string,updated:Date) {
+export function nameOfFile(key:string,updated:Date) {
         
-        let dateStr:string = ''
-        let timeStr:string = ''
+    let dateStr:string = ''
+    let timeStr:string = ''
 
-        if(config.checkUpdates){
-            dateStr = updated.toLocaleDateString().replace(new RegExp('[./]', 'g'),"_")
-            timeStr = updated.toLocaleTimeString().replace(new RegExp(':', 'g'),"_")
-        }
-        
-        
-        return config.checkUpdates ? `${key}D${dateStr}T${timeStr}` : `${key}` 
+    if(config.checkUpdates){
+        dateStr = updated.toLocaleDateString().replace(new RegExp('[./]', 'g'),"_")
+        timeStr = updated.toLocaleTimeString().replace(new RegExp(':', 'g'),"_")
     }
     
+    
+    return config.checkUpdates ? `${key}D${dateStr}T${timeStr}` : `${key}` 
 }
 
 

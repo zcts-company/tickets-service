@@ -85,12 +85,15 @@ export class HotelServiceDb {
             let count:number = 0;
             rows.forEach((row) => {
               if(row.reservation.provider.includes(this.reservationCache.getProviderName())){
-                
+                logger.trace(`[DATABASE SERVICE] recived reservation from database of provider: ${row.reservation.provider}`)
                 if(row.reservation.locator){
+                  logger.trace(`[DATABASE SERVICE] recived reservation from database with locator: ${row.reservation.locator}`)
                   const reservation = this.reservationCache.getItem(row.reservation.locator);
                     if(!reservation || (row.updated > reservation.updated) ){
+                      logger.info(`[DATABASE SERVICE] start adding process for new reeservation to cache. Locator: ${row.reservation.locator}`)
                         this.reservationCache.addToCache(row.reservation.locator,row)
                         count++;
+                        logger.info(`[DATABASE SERVICE] finish adding process process for new reeservation to cache. Locator: ${row.reservation.locator}`)
                     }
                 }
 

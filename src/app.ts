@@ -1,4 +1,4 @@
-import { nemoTavelServer, services } from "./config/services.mjs";
+import { nemoTavelServer, services, travelline, travellineHandServer } from "./config/services.mjs";
 import { TicketService } from "./services/interfaces/TicketService.mjs";
 import { toDateForSQL } from "./util/dateFunction.mjs";
 import {config} from "./config/config.mjs"
@@ -15,6 +15,7 @@ setSearchDate();
 logger.info(`[MAIN APP] Start tickets service`)
 
 nemoTavelServer.startServer(config.nemo.server.port)
+travellineHandServer.startServer(config.travelline.server.port)
 
 
     setInterval(() => {

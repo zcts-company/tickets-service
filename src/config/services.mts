@@ -8,6 +8,7 @@ import travellineConfig from "../services/hotel/travelline/config/config.mjs"
 
 export const hotelCacheTravelline:HotelCache = new HotelCache(travellineConfig.nameProvider)
 export const travelline:TicketService = new Travelline()
+export const travellineHandServer:TicketServiceServer = new Travelline()
 
 export const nemoTavelServer:TicketServiceServer = new Nemo()
 

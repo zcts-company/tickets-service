@@ -4,5 +4,11 @@ export const config = {
         server:{
             port:48659
         }
+    },
+    travelline: {
+        server:{
+            port:48658
+        }
     }
+    
 }

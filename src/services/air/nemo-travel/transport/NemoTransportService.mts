@@ -1,17 +1,24 @@
 import fs from "fs-extra"
 import {config} from "../config/config.mjs"
 import { logger } from "../../../../common/logging/Logger.mjs"
+import SambaClient from "samba-client"
 
 
 export class NemoTransportService {
 
     private currentDirectory:string
     private directory1C:string
-  
+    private sambaClient:SambaClient
     
     constructor(){
         this.currentDirectory = config.fileOutput.path
         this.directory1C= config.directory1C.path
+        this.sambaClient = new SambaClient({
+            address:config.samba.server,
+            username:config.samba.user,
+            password:config.samba.password,
+            domain:config.samba.domain
+        }) 
     }
 
 
@@ -31,7 +38,7 @@ export class NemoTransportService {
                             }
                     }catch {
                         logger.error(`[NEMOTRAVEL TRANSPORT] Directory ${this.directory1C} not exists or not available`)
-                        throw new Error(`[NEMOTRAVEL TRANSPORT] Directory ${this.directory1C} not exists or not available`);
+                        //throw new Error(`[NEMOTRAVEL TRANSPORT] Directory ${this.directory1C} not exists or not available`);
                         
                     }
             })
@@ -39,6 +46,29 @@ export class NemoTransportService {
                
        } 
     }
+
+    async sendTo1CSamba(currentArchive:string|undefined){
+        if(currentArchive){
+             const files: string[] = await fs.readdir(this.currentDirectory)
+             if(files.length > 0){
+                 files.forEach(async (fileName) => {
+                     try{
+                        await this.sambaClient.sendFile(this.currentDirectory + fileName,config.samba.directory + fileName)
+                        const exists:boolean = await this.sambaClient.fileExists(config.samba.directory + fileName)
+                 
+                             if(exists){
+                                 logger.info(`[NEMOTRAVEL TRANSPORT] File ${this.currentDirectory + fileName} sended to directory (SAMBA SERVER:${config.samba.server}): ${config.samba.directory}`);
+                                 await this.sendToArchive(currentArchive,fileName)
+                             }
+                     }catch (error:any) {
+                         logger.error(`[NEMOTRAVEL TRANSPORT] Directory (SAMBA SERVER:${config.samba.server}) ${config.samba.directory} not exists or not available`)
+                         logger.error(`[NEMOTRAVEL TRANSPORT] ERROR: ${error.message}`)
+                     }
+             })
+            }
+                
+        } 
+     }
 
 
     private async sendToArchive(currentArchive:string,fileName:string){

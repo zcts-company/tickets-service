@@ -17,6 +17,13 @@ export const config = {
     },
     directory1C:{
         path:`${path}directory1C/`
-    }
+    },
+    samba:{ 
+        server: "//10.0.50.92/aeroexpress",
+        directory:"/test/nemo1C/",
+        user: "svc-newonline-aeroex",
+        password: "Xvdf5@2gd",
+        domain: "zcts"
+    },
 
 }

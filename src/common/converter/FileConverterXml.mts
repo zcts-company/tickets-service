@@ -12,7 +12,7 @@ export class FileConverterXml {
 
 
     jsonToXml(object:Object){
-      const result = `${this.version}${json2xml(JSON.stringify(object),{compact:true})}`
+      const result = `${this.version}${json2xml(JSON.stringify(object),{compact:true})}</xml>`
             return result;
         }
 
