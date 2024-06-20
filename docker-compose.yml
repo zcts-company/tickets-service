@@ -6,6 +6,7 @@ services:
 
     volumes:
       - D:/tickets/files/:/tmp/tickets/files/
+      - D:/tickets/logs/:/var/log/ticket-services/
     ports:
       - 48659:48659
     environment:   

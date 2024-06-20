@@ -1,7 +1,7 @@
 import fs from "fs-extra"
 import config from "../config/config.mjs" //assert { type: "json" };
-import { logger } from "../../../../common/logging/Logger.mjs"
 import SambaClient from 'samba-client'
+import { logger } from "../../../../common/logging/Logger.mjs"
 
 
 export class TravellineTransport {
@@ -23,7 +23,7 @@ export class TravellineTransport {
 
 
 
-    async sendTo1C(currentArchive:string|undefined){
+    async sendTo1CLocalPath(currentArchive:string|undefined){
        if(currentArchive){
             const files: string[] = await fs.readdir(this.currentDirectory)
             if(files.length > 0){
@@ -36,10 +36,9 @@ export class TravellineTransport {
                                 logger.info(`[TRAVELLINE TRANSPORT] File ${fileName} sended to directory: ${this.directory1C}`);
                                 await this.sendToArchive(currentArchive,fileName)
                             }
-                    }catch {
+                    }catch (error:any) {
                         logger.error(`[TRAVELLINE TRANSPORT] Directory ${this.directory1C} not exists or not available`)
-                        //throw new Error(`[TRAVELLINE TRANSPORT] Directory ${this.directory1C} not exists or not available`);
-                        
+                        logger.error(`[TRAVELLINE TRANSPORT] ERROR: ${error.message}`)
                     }
             })
            }
@@ -71,7 +70,21 @@ export class TravellineTransport {
      }
 
 
+     async forceSendTo1CSamba(fileName:string, path:string){
+        try{
+            await this.sambaClient.sendFile(this.currentDirectory + fileName,config.samba.directory + fileName)
+            const exists:boolean = await this.sambaClient.fileExists(config.samba.directory + fileName)
+                 
+            if(exists){
+               logger.info(`[TRAVELLINE TRANSPORT] File ${path + fileName} sended to directory (SAMBA SERVER:${config.samba.server}): ${config.samba.directory}`);
+               this.removeFileFromCurrent(fileName)
+            }
+        }catch (error:any) {
+            logger.error(`[TRAVELLINE TRANSPORT] Directory (SAMBA SERVER:${config.samba.server}) ${config.samba.directory} not exists or not available`)
+            logger.error(`[TRAVELLINE TRANSPORT] ERROR: ${error.message}`)
+        }
 
+     }
 
     private async sendToArchive(currentArchive:string,fileName:string){
 

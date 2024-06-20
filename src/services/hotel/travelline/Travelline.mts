@@ -1,10 +1,7 @@
 
 import express from "express";
 import { HotelCache } from "../../../common/cache/HotelCache.mjs";
-import { FileConverterXml } from "../../../common/converter/FileConverterXml.mjs";
-import { FileService } from "../../../common/file-service/FileService.mjs";
-import { logger } from "../../../common/logging/Logger.mjs";
-import { hotelCacheTravelline } from "../../../config/services.mjs";
+import { fileConverterXml, fileService, hotelCacheTravelline} from "../../../config/services.mjs";
 import { toDateForSQL } from "../../../util/dateFunction.mjs";
 import { HotelServiceDb } from "../../database/HotelServiceDb.mjs";
 import { HotelService } from "../interfaces/HotelService.mjs";
@@ -18,14 +15,13 @@ import bodyParser from "body-parser";
 import { HotelServer } from "../interfaces/HotelServer.mjs";
 import errorHandler from "../../../common/middleware/errorHandler.mjs";
 import { handService } from "./router/HandService.mjs";
+import { logger } from "../../../common/logging/Logger.mjs";
 
 export class Travelline implements HotelService,HotelServer{
 
     private server:any;
     private database:HotelServiceDb
     private webService:HotelWebService
-    private converter: FileConverterXml
-    private fileService:FileService;
     private transportService:TravellineTransport;
     private currentDirectory:string
     private arhiveDirectory:string
@@ -41,8 +37,6 @@ export class Travelline implements HotelService,HotelServer{
 
         this.database = new HotelServiceDb(config.database.orders,hotelCacheTravelline,config.checkUpdates);
         this.webService = new TravellineWebService();
-        this.converter = new FileConverterXml();
-        this.fileService = new FileService();
         this.transportService = new TravellineTransport()
         this.currentDirectory = config.fileOutput.path
         this.arhiveDirectory = config.fileArhive.path
@@ -76,22 +70,22 @@ export class Travelline implements HotelService,HotelServer{
         logger.trace(`[TRAVELLINE] Service ${config.name} recent request to check reservation from date ${toDateForSQL(dateFrom)} to date ${toDateForSQL(dateTo)}`);     
         
         this.currentArhivePath = `${this.arhiveDirectory}${dateTo.toLocaleDateString().replace(new RegExp('[./]', 'g'),"-")}/`;
-        const directoryArhiveExist:boolean = await this.fileService.pathExsist(this.currentArhivePath);
-        const directoryCurrentExist:boolean = await this.fileService.pathExsist(this.currentDirectory);
-        const directory1CExist:boolean = await this.fileService.pathExsist(this.directory1C);
+        const directoryArhiveExist:boolean = await fileService.pathExsist(this.currentArhivePath);
+        const directoryCurrentExist:boolean = await fileService.pathExsist(this.currentDirectory);
+        const directory1CExist:boolean = await fileService.pathExsist(this.directory1C);
 
         if(!directoryArhiveExist){
-            await this.fileService.createDirectory(this.currentArhivePath)
+            await fileService.createDirectory(this.currentArhivePath)
             logger.info(`[TRAVELLINE] Directory created: ${this.currentArhivePath}`);
         }
 
         if(!directoryCurrentExist){
-            await this.fileService.createDirectory(this.currentDirectory)
+            await fileService.createDirectory(this.currentDirectory)
             logger.info(`[TRAVELLINE] Directory created: ${this.currentDirectory}`);
         }
 
         if(!directory1CExist){
-            await this.fileService.createDirectory(this.directory1C)
+            await fileService.createDirectory(this.directory1C)
             logger.info(`[TRAVELLINE] Directory created: ${this.directory1C}`);
         }
         
@@ -130,10 +124,10 @@ export class Travelline implements HotelService,HotelServer{
 
 
     private createFile(reservationData: BookingResponse, key:string, updated:Date) {
-        const res:string = this.converter.jsonToXml(reservationData);
+        const res:string = fileConverterXml.jsonToXml(reservationData);
         const fileName = nameOfFile(key,updated);
         const path = `${this.currentDirectory}${fileName}.xml`
-        this.fileService.writeFile(path,res).then(() => {
+        fileService.writeFile(path,res).then(() => {
             
             logger.info(`[TRAVELLINE] File with name ${fileName}.xml created in directory: ${this.currentDirectory}`);
             
@@ -149,9 +143,9 @@ export class Travelline implements HotelService,HotelServer{
             const reservation = reservationFromBase.get(arrayOfkeys[index])
             const fileName = nameOfFile(arrayOfkeys[index],reservation.updated)
 
-            const existArchive:boolean = await this.fileService.pathExsist(this.currentArhivePath + `${fileName}.xml`);
+            const existArchive:boolean = await fileService.pathExsist(this.currentArhivePath + `${fileName}.xml`);
             if(!existArchive){
-                const existCurrent:boolean = await this.fileService.pathExsist(this.currentDirectory + `${fileName}.xml`)
+                const existCurrent:boolean = await fileService.pathExsist(this.currentDirectory + `${fileName}.xml`)
                 if (!existCurrent) {
                     result.set(arrayOfkeys[index],reservation)
                 }

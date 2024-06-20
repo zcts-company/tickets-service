@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { logger } from "../../../../common/logging/Logger.mjs";
 import { log } from "console";
+import { logger } from "../../../../common/logging/Logger.mjs";
 
 export const valid = (req:Request,res:Response,next:any) => {
 

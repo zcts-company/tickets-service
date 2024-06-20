@@ -1,5 +1,6 @@
-import { BEARER } from "../../../../common/constants/constant";
+import { BEARER } from "../../../../common/constants/constant.mjs";
 import { logger } from "../../../../common/logging/Logger.mjs";
+
 
 
 const auth = () => {

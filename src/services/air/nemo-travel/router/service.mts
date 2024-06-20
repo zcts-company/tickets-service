@@ -1,18 +1,16 @@
 import express, { Request, Response } from "express";
 import asyncHandler from 'express-async-handler'
 import auth from "../midleware/Authentification.mjs";
-import { FileService } from "../../../../common/file-service/FileService.mjs";
-import { FileConverterXml } from "../../../../common/converter/FileConverterXml.mjs";
 import { config } from "../config/config.mjs";
 import { NemoOrder } from "../model/NemoOrder.mjs";
 import { validation } from "../../../../common/validation/validation.mjs";
 import { nemoOrder } from "../shemas/NemoOrder.mjs";
 import valid from "../midleware/valid.mjs";
+import { fileConverterXml, fileService} from "../../../../config/services.mjs";
 import { logger } from "../../../../common/logging/Logger.mjs";
 
 export const service = express.Router();
-const fileService = new FileService();
-const converter:FileConverterXml = new FileConverterXml();
+
 const currentDirectory = config.fileOutput.path
 let counter = 0
 
@@ -83,7 +81,7 @@ service.post('/create',auth(),asyncHandler(async(req:any, res:Response) => {
 
 
 async function createFile(order:NemoOrder, response:Response) {
-    const res:string = converter.jsonToXml(order);
+    const res:string = fileConverterXml.jsonToXml(order);
     // const updated = new Date(order.data.lastModifiedDate);
     // const fileName = nameOfFile(order.params.id.toString(),updated);
 

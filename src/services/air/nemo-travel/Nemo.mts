@@ -9,6 +9,7 @@ import cors from 'cors'
 import { NemoTransportService } from "./transport/NemoTransportService.mjs";
 import setArchivePath from "./midleware/SetArchivePath.mjs";
 import errorHandler from "../../../common/middleware/errorHandler.mjs";
+import { fileService} from "../../../config/services.mjs";
 import { logger } from "../../../common/logging/Logger.mjs";
 
 
@@ -28,7 +29,7 @@ export class Nemo implements AirServiceServer {
         this.server.use(bodyParser.urlencoded({extended: true}));
         this.server.use(bodyParser.json());
         this.transport = new NemoTransportService()
-        this.fileService = new FileService();
+        this.fileService = fileService;
         this.currentDirectory = config.fileOutput.path
         this.archiveDirectory = config.fileArhive.path
         this.directory1C = config.directory1C.path
