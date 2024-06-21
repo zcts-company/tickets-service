@@ -77,7 +77,7 @@ export class NemoTransportService {
         const exists:boolean = await fs.pathExists(`${currentArchive}${fileName}`)
         
         if(exists){
-            logger.info(`[TRAVELLINE TRANSPORT] File ${fileName} sended to archive directory: ${currentArchive}`);
+            logger.info(`[NEMOTRAVEL TRANSPORT] File ${fileName} sended to archive directory: ${currentArchive}`);
             await this.removeFileFromCurrent(fileName)
         }
 
