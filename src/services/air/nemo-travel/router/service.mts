@@ -38,7 +38,7 @@ service.use('',asyncHandler(
 //service.post('/create',auth(),valid,asyncHandler(async(req:any, res:Response) => {
 
 service.post('/create',auth(),asyncHandler(async(req:any, res:Response) => {
-    logger.trace(`[NEMO TRAVEL] Resived post request for create reservation file: ${req.body}`);
+   logger.info(`[NEMO TRAVEL] Resived post request for create reservation file: ${req.body}`);
 
    try {
     //const updated = new Date(req.body.data.lastModifiedDate);

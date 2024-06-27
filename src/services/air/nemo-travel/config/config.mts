@@ -24,6 +24,6 @@ export const config = {
         user: "svc-newonline-aeroex",
         password: "Xvdf5@2gd",
         domain: "zcts"
-    },
+    }
 
 }
