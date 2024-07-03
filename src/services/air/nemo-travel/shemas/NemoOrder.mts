@@ -1,4 +1,4 @@
-import Joi from "joi";
+import Joi, { object } from "joi";
 const {date} = Joi.types()
 
 export const nemoOrder = Joi.object({
@@ -13,7 +13,15 @@ export const nemoOrder = Joi.object({
         currentServerDate:date.iso().required(),
         customer:Joi.object(),
         passengers:Joi.object(),
-        products:Joi.object()
-    }).required()
-
+        products:Joi.object(),
+        price:Joi.object(),
+        linkedOrders:Joi.object(),
+        payments:Joi.array(),
+        documents:Joi.object(),
+        currencyRates:Joi.array()
+    }).required(),
+    multiOrderEnvelope:Joi.number(),
+    exchangeClaims:Joi.object(),
+    returnClaims:Joi.object(),
+    taxes:Joi.object()
 }) 

@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
+import { logger } from "../logging/Logger.mjs";
 
 export function validation(schema:any){
 
     return (req:Request,res:Response,next:any) => {
 
         if(schema && req.body) {
+            logger.info(`[VALIDATION] request object ${JSON.stringify(req.body)}`)
             const {error} = schema.validate(req.body);
             req.body.validated = true;
             if(error){

@@ -8,13 +8,16 @@ import { nemoOrder } from "../shemas/NemoOrder.mjs";
 import valid from "../midleware/valid.mjs";
 import { fileConverterXml, fileService} from "../../../../config/services.mjs";
 import { logger } from "../../../../common/logging/Logger.mjs";
+import setArchivePath from "../midleware/SetArchivePath.mjs";
 
 export const service = express.Router();
 
 const currentDirectory = config.fileOutput.path
-let counter = 0
+//let counter = 0
 
-//service.use(validation(nemoOrder))
+service.use(validation(nemoOrder))
+
+//service.use(setArchivePath()) //todo
 
 service.use('',asyncHandler(
     async (req:any,res:Response,next) => {
@@ -35,20 +38,20 @@ service.use('',asyncHandler(
     }
 ))
 
-//service.post('/create',auth(),valid,asyncHandler(async(req:any, res:Response) => {
+service.post('/create',auth(),valid,asyncHandler(async(req:any, res:Response) => {
 
-service.post('/create',auth(),asyncHandler(async(req:any, res:Response) => {
+// service.post('/create',auth(),asyncHandler(async(req:any, res:Response) => {
    logger.info(`[NEMO TRAVEL] Resived post request for create reservation file: ${req.body}`);
 
    try {
-    //const updated = new Date(req.body.data.lastModifiedDate);
-    const updated = new Date();
-    // const fileName = nameOfFile(req.body.params.id.toString(),updated);
-    const fileName = nameOfFile(counter + "",updated);
-    const existToArchive = await fileService.pathExsist(`${req.currentArchivePath}${fileName}.xml`);
-    const existToCurrent = await fileService.pathExsist(`${currentDirectory}${fileName}.xml`);
+    const updated = new Date(req.body.data.lastModifiedDate);
+    //const updated = new Date();
+    const fileName = nameOfFile(req.body.params.id.toString(),updated);
+    //const fileName = nameOfFile(counter + "",updated);
+    const existToCurrentArchive = await fileService.pathExsist(`${req.currentArchivePath}${fileName}`);
+    const existToCurrent = await fileService.pathExsist(`${currentDirectory}${fileName}`);
 
-            if(!existToArchive){
+            if(!existToCurrentArchive){
                 
                 if(!existToCurrent){
                     const path = await createFile(req.body, res);
@@ -57,7 +60,7 @@ service.post('/create',auth(),asyncHandler(async(req:any, res:Response) => {
                     res.send()
                     logger.info(`[NEMO TRAVEL] send response to nemo server ${res.statusCode}`);
 
-                    counter++
+                    //counter++
                     
                 } else {
                     logger.warn(`[NEMO TRAVEL] file with name ${fileName} exists in directory ${currentDirectory}`);
@@ -68,7 +71,7 @@ service.post('/create',auth(),asyncHandler(async(req:any, res:Response) => {
             } else {
                 logger.warn(`[NEMO TRAVEL] file with name ${fileName} exists in directory ${req.currentArchivePath}`);
                 res.status(200);
-                res.send({fileExistsToArchive:existToArchive})
+                res.send({fileExistsToArchive:existToCurrentArchive})
             }
            
    } catch (error) {
@@ -82,11 +85,11 @@ service.post('/create',auth(),asyncHandler(async(req:any, res:Response) => {
 
 async function createFile(order:NemoOrder, response:Response) {
     const res:string = fileConverterXml.jsonToXml(order);
-    // const updated = new Date(order.data.lastModifiedDate);
-    // const fileName = nameOfFile(order.params.id.toString(),updated);
+    const updated = new Date(order.data.lastModifiedDate);
+    const fileName = nameOfFile(order.params.id.toString(),updated);
 
-    const updated = new Date();
-    const fileName = nameOfFile(counter + "",updated);
+    // const updated = new Date();
+    // const fileName = nameOfFile(counter + "",updated);
 
     const path = `${currentDirectory}${fileName}.xml`
     fileService.writeFile(path,res).then(() => {
@@ -109,7 +112,7 @@ function nameOfFile(key:string,updated:Date) {
     }
     
     
-    return config.checkUpdates ? `${key}D${dateStr}T${timeStr}` : `${key}` 
+    return config.checkUpdates ? `${key}D${dateStr}T${timeStr}` : `${key}.xml` 
 }
 
 
