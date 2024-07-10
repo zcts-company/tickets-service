@@ -24,6 +24,7 @@ export const config = {
         user: "svc-newonline-aeroex",
         password: "Xvdf5@2gd",
         domain: "zcts"
-    }
+    },
+    suppliers:["SU","GDS AMADEUS (1A)"]
 
 }

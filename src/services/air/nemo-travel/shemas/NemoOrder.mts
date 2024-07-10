@@ -17,7 +17,7 @@ export const nemoOrder = Joi.object({
         price:Joi.object(),
         linkedOrders:Joi.object(),
         payments:Joi.array(),
-        documents:Joi.object(),
+        documents:Joi.object()||Joi.array(),
         currencyRates:Joi.array()
     }).required(),
     multiOrderEnvelope:Joi.number(),
