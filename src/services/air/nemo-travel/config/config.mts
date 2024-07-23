@@ -25,6 +25,7 @@ export const config = {
         password: "Xvdf5@2gd",
         domain: "zcts"
     },
-    suppliers:["SU","GDS AMADEUS (1A)"]
+    suppliers:["AEROFLOTNDC"],
+    permitedStatuses:["ticket","cancelled","refunded","exchanged"]
 
 }

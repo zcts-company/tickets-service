@@ -1,10 +1,10 @@
 import { fileService, nemoTavelServer, services, travelline, travellineHandServer } from "./config/services.mjs";
 import { TicketService } from "./services/interfaces/TicketService.mjs";
 import { toDateForSQL } from "./util/dateFunction.mjs";
-import {config} from "./config/config.mjs"
 import express from "express"
 import { LOGGER_PATH } from "./common/constants/constant.mjs";
 import { changeLoggerFileName, getCurrentPath, logger } from "./common/logging/Logger.mjs";
+import config from "./config/main-config.json" assert {type: 'json'}
 
 let counter = 0;
 let time = 0
@@ -19,14 +19,13 @@ setSearchDate();
 logger.info(`[MAIN APP] Start tickets service`)
 
 
-nemoTavelServer.startServer(config.nemo.server.port)
-travellineHandServer.startServer(config.travelline.server.port)
+nemoTavelServer.startServer(config.main.ports.nemo)
+travellineHandServer.startServer(config.main.ports.travelline_hand)
 
 
     setInterval(() => {
         counter++;
         time += 10000;
-
         if(Date.now() > dateTo.getTime()){
             logger.info(`[MAIN APP] start process of changing the current date`)
             setSearchDate()
@@ -38,7 +37,7 @@ travellineHandServer.startServer(config.travelline.server.port)
             logger.trace(`[MAIN APP] Step number ${counter} [service name ${service.getServiceName()}]`)
             service.run(dateFrom,dateTo);
         })
-    },config.interval * 1000)
+    },config.main.interval * 1000)
 
     function setSearchDate(){      
         const now = new Date()  

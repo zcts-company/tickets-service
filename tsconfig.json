@@ -3,7 +3,7 @@
     "allowJs": true,
     "outDir": "build",
       "target": "es6",
-      "module": "es2020",
+      "module": "ESNext",
       "sourceMap": true , 
       "moduleResolution":"node",
       "isolatedModules": true,
@@ -11,6 +11,7 @@
       "allowSyntheticDefaultImports":true,
       "extendedDiagnostics":true,
       "strict": true,
+      "resolveJsonModule": true
   },
   "include": ["./src/**/*"],
   "exclude":["node_modules",".vscode","files"]

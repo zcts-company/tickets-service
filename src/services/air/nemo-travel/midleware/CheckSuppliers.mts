@@ -10,20 +10,28 @@ const checkSuppliers = () => {
         logger.info(`[NEMO CHECK SUPLIERS] Start process checking supliers`)
         const body:NemoOrder = req.body;
         let counter = 1;
-        const mapSuppliers:Map<number,String> = new Map();
+
+        const mapSuppliers:Map<number,string> = new Map();
+
         while(body.data.products["ID_FLT_" + counter]){
             logger.trace(`[NEMO CHECK SUPLIERS] Check product : ${JSON.stringify(body.data.products["ID_FLT_" + counter])}`)
             const supplier:string = body.data.products["ID_FLT_" + counter].info.supplier.system;
-
-            if(config.suppliers.includes(supplier)){
-                mapSuppliers.set(counter,supplier)
-                logger.trace(`[NEMO CHECK SUPLIERS] add suplier ${supplier} to map`)
-            }
+            mapSuppliers.set(counter,supplier)
             counter++;
         }
 
+        let helperSupplier:boolean[] = []
+        Array.from(mapSuppliers.values()).forEach((supplier,index) => {
+              
+            helperSupplier[index] = config.suppliers.includes(supplier) 
+
+        }) 
+
+        req.body.allSuppliersPermitted = !helperSupplier.includes(false)
         req.body.suppliers = mapSuppliers;
-        logger.info(`[NEMO CHECK SUPLIERS] add avaliable supliers ${JSON.stringify(Object.fromEntries(mapSuppliers.entries()))} to body of request`)
+
+        logger.info(`[NEMO CHECK SUPLIERS] add supliers ${JSON.stringify(Object.fromEntries(mapSuppliers.entries()))} to body of request`)
+        
         next();
     }
 }

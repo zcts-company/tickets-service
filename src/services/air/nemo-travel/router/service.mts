@@ -9,14 +9,19 @@ import valid from "../midleware/valid.mjs";
 import { fileConverterXml, fileService} from "../../../../config/services.mjs";
 import { logger } from "../../../../common/logging/Logger.mjs";
 import setArchivePath from "../midleware/SetArchivePath.mjs";
-import checkSuppliers from "../midleware/CheckSuplier.mjs";
+import checkSuppliers from "../midleware/CheckSuppliers.mjs";
+import supplierValid from "../midleware/SupplierValid.mjs";
+import checkStatus from "../midleware/CheckStatus.mjs";
+import statusValid from "../midleware/StatusValid.mjs";
 
 export const service = express.Router();
 
 const currentDirectory = config.fileOutput.path
 //let counter = 0
 
-service.use(validation(nemoOrder))
+service.use(validation(nemoOrder));
+service.use(checkSuppliers());
+service.use(checkStatus());
 
 //service.use(setArchivePath()) //todo
 
@@ -38,8 +43,8 @@ service.use('',asyncHandler(
         next()
     }
 ))
-
-service.post('/create',auth(),valid,checkSuppliers(),asyncHandler(async(req:any, res:Response) => {
+//supplierValid,statusValid,
+service.post('/create',auth(),valid,supplierValid,statusValid,asyncHandler(async(req:any, res:Response) => {
 
 // service.post('/create',auth(),asyncHandler(async(req:any, res:Response) => {
    logger.info(`[NEMO TRAVEL] Resived post request for create reservation file: ${JSON.stringify(req.body)}`);
@@ -58,7 +63,7 @@ service.post('/create',auth(),valid,checkSuppliers(),asyncHandler(async(req:any,
                     const path = await createFile(req.body, res);
                     await fileService.pathExsist(path);
                     res.status(200);
-                    res.send(Object.fromEntries(req.body.suppliers.entries())) 
+                    res.send() 
                     logger.info(`[NEMO TRAVEL] send response to nemo server ${res.statusCode}`);
 
                     //counter++

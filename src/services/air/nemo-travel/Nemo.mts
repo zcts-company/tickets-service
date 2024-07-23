@@ -70,8 +70,8 @@ export class Nemo implements AirServiceServer {
 
         setInterval(() => {
             logger.trace(`[NEMO TRAVEL] Step transport service of nemo travel`);
-            //this.transport.sendTo1C(this.currentArchiveDirectory)
-            this.transport.sendTo1CSamba(this.currentArchiveDirectory)
+            this.transport.sendTo1C(this.currentArchiveDirectory)
+            //this.transport.sendTo1CSamba(this.currentArchiveDirectory)
 
         },config.intervalSending * 1000)
         

@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { log } from "console";
 import { logger } from "../../../../common/logging/Logger.mjs";
 
 export const valid = (req:Request,res:Response,next:any) => {
@@ -15,7 +14,7 @@ export const valid = (req:Request,res:Response,next:any) => {
     }
 
     if(req.body.joiError){
-        res.status(400);
+        res.status(200); //test был 400
         logger.warn(`Error validate: ${req.body.joiError}`)
         throw req.body.joiError;
     }

@@ -104,7 +104,7 @@ export class Travelline implements HotelService,HotelServer{
               logger.info(`[TRAVELLINE] start process of cleared cache of date ${this.currentDate} `);
               hotelCacheTravelline.clearCache()
               logger.info(`[TRAVELLINE] Cache of date ${this.currentDate} cleared`);
-              logger.info(`[TRAVELLINE] rows in cache: ${hotelCacheTravelline.getCache().keys()}`);
+              logger.info(`[TRAVELLINE] rows in cache: ${Array.from(hotelCacheTravelline.getCache().keys())}`);
 
               this.currentDate = new Date(dateFrom);
               logger.info(`[TRAVELLINE] Current date of cache setted ${this.currentDate}`);
