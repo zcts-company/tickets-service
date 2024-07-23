@@ -1,12 +1,12 @@
 
 import express from "express";
 import { HotelCache } from "../../../common/cache/HotelCache.mjs";
-import { fileConverterXml, fileService, hotelCacheTravelline} from "../../../config/services.mjs";
+import { fileConverterXml, fileService, hotelCacheTravelline} from "../../../instances/services.mjs";
 import { toDateForSQL } from "../../../util/dateFunction.mjs";
 import { HotelServiceDb } from "../../database/HotelServiceDb.mjs";
 import { HotelService } from "../interfaces/HotelService.mjs";
 import { HotelWebService } from "../interfaces/HotelWebService.mjs";
-import config from "./config/config.mjs"
+//import config from "./config/config_old.mjs"
 import { TravellineTransport } from "./transport-service/TravellineTransport.mjs";
 import { BookingResponse } from "./types/BookingResponse.mjs";
 import { TravellineWebService } from "./web-service/TravellineWebService.mjs";
@@ -16,6 +16,7 @@ import { HotelServer } from "../interfaces/HotelServer.mjs";
 import errorHandler from "../../../common/middleware/errorHandler.mjs";
 import { handService } from "./router/HandService.mjs";
 import { logger } from "../../../common/logging/Logger.mjs";
+import config from "../../../config/hotel/travelline.json" assert {type: 'json'}
 
 export class Travelline implements HotelService,HotelServer{
 
@@ -38,9 +39,9 @@ export class Travelline implements HotelService,HotelServer{
         this.database = new HotelServiceDb(config.database.orders,hotelCacheTravelline,config.checkUpdates);
         this.webService = new TravellineWebService();
         this.transportService = new TravellineTransport()
-        this.currentDirectory = config.fileOutput.path
-        this.arhiveDirectory = config.fileArhive.path
-        this.directory1C = config.directory1C.path
+        this.currentDirectory = config.fileOutput.mainPath
+        this.arhiveDirectory = config.fileArhive.mainPath
+        this.directory1C = config.directory1C.mainPath
         this.currentDate = new Date() 
         logger.info(`[TRAVELLINE] Service ${config.name} created instance and started. Date: ${toDateForSQL(this.currentDate)}`);
     }

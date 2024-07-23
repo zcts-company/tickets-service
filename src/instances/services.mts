@@ -3,7 +3,7 @@ import { Nemo } from "../services/air/nemo-travel/Nemo.mjs";
 import { Travelline } from "../services/hotel/travelline/Travelline.mjs";
 import { TicketService} from "../services/interfaces/TicketService.mjs";
 import { TicketServiceServer } from "../services/interfaces/TicketServiceServer.mjs";
-import travellineConfig from "../services/hotel/travelline/config/config.mjs"
+import travellineConfig from "../config/hotel/travelline.json" assert {type: 'json'}
 import { FileService } from "../common/file-service/FileService.mjs";
 import { FileConverterXml } from "../common/converter/FileConverterXml.mjs";
 

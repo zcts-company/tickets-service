@@ -1,8 +1,8 @@
 import fs from "fs-extra"
-import config from "../config/config.mjs" //assert { type: "json" };
+//import config from "../config/config_old.mjs" //assert { type: "json" };
 import SambaClient from 'samba-client'
 import { logger } from "../../../../common/logging/Logger.mjs"
-
+import config from "../../../../config/hotel/travelline.json" assert {type: 'json'}
 
 export class TravellineTransport {
 
@@ -11,8 +11,8 @@ export class TravellineTransport {
     private sambaClient:SambaClient
     
     constructor(){
-        this.currentDirectory = config.fileOutput.path
-        this.directory1C = config.directory1C.path
+        this.currentDirectory = config.fileOutput.mainPath
+        this.directory1C = config.directory1C.mainPath
         this.sambaClient = new SambaClient({
             address:config.samba.server,
             username:config.samba.user,

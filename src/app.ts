@@ -1,4 +1,4 @@
-import { fileService, nemoTavelServer, services, travelline, travellineHandServer } from "./config/services.mjs";
+import { fileService, nemoTavelServer, services, travellineHandServer } from "./instances/services.mjs";
 import { TicketService } from "./services/interfaces/TicketService.mjs";
 import { toDateForSQL } from "./util/dateFunction.mjs";
 import express from "express"

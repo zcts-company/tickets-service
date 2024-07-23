@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express"
 import { NemoOrder } from "../model/NemoOrder.mjs";
-import {config} from "../config/config.mjs"
+//import {config} from "../config/config.mjs"
 import { logger } from "../../../../common/logging/Logger.mjs";
 import { number } from "joi";
+import config from "../../../../config/air/nemo.json" assert {type: 'json'}
 
 const checkSuppliers = () => {
 

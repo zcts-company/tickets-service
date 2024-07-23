@@ -1,0 +1,12 @@
+{
+    "serverHost":"dev30-db-1",
+    "localhost":"localhost",
+    "localContainerHost":"zcts-db-1",
+    "mainHost":"dev30-db-1",
+    "port":5432,
+    "login":"postgres",
+    "password":"postgres",
+    "service":{
+        "name":"hotel"
+    }
+}

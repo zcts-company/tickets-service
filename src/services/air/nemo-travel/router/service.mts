@@ -1,22 +1,22 @@
 import express, { Request, Response } from "express";
 import asyncHandler from 'express-async-handler'
 import auth from "../midleware/Authentification.mjs";
-import { config } from "../config/config.mjs";
+//import { config } from "../config/config.mjs";
 import { NemoOrder } from "../model/NemoOrder.mjs";
 import { validation } from "../../../../common/validation/validation.mjs";
 import { nemoOrder } from "../shemas/NemoOrder.mjs";
 import valid from "../midleware/valid.mjs";
-import { fileConverterXml, fileService} from "../../../../config/services.mjs";
+import { fileConverterXml, fileService} from "../../../../instances/services.mjs";
 import { logger } from "../../../../common/logging/Logger.mjs";
 import setArchivePath from "../midleware/SetArchivePath.mjs";
 import checkSuppliers from "../midleware/CheckSuppliers.mjs";
 import supplierValid from "../midleware/SupplierValid.mjs";
 import checkStatus from "../midleware/CheckStatus.mjs";
 import statusValid from "../midleware/StatusValid.mjs";
-
+import config from "../../../../config/air/nemo.json" assert {type: 'json'}
 export const service = express.Router();
 
-const currentDirectory = config.fileOutput.path
+const currentDirectory = config.fileOutput.mainPath
 //let counter = 0
 
 service.use(validation(nemoOrder));

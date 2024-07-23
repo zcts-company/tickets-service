@@ -1,11 +1,11 @@
 
 import pg from "pg"
 const Pool =  pg.Pool;
-import {config} from "./config/db.mjs" //assert { type: "json" };;
+//import {config} from "./config/db.mjs" //assert { type: "json" };;
 import { HotelCache } from "../../common/cache/HotelCache.mjs";
 import { toDateForSQL } from "../../util/dateFunction.mjs";
 import { logger } from "../../common/logging/Logger.mjs";
-
+import config from "../../config/db/database.json" assert {type: 'json'}
 
 export class HotelServiceDb {
 
@@ -19,7 +19,7 @@ export class HotelServiceDb {
                 user:config.login,
                 password:config.password,
                 database:databaseName,
-                host:config.host,
+                host:config.mainHost,
                 port:config.port,
                 max: 2
             }) 

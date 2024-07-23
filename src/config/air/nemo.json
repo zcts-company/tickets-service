@@ -1,0 +1,36 @@
+{
+    "nameService": "Nemo travel ticket service",
+    "checkUpdates": true,
+    "intervalSending": 5,
+    "fileOutput": {
+        "path": "D:/tickets/files/nemo/current/",
+        "pathDocker": "/tmp/tickets/files/nemo/current/",
+        "mainPath": "/tmp/tickets/files/nemo/current/"
+    },
+    "fileArhive": {
+        "path": "D:/tickets/files/nemo/archive/",
+        "pathDocker": "/tmp/tickets/files/nemo/archive/",
+        "mainPath": "/tmp/tickets/files/nemo/archive/"
+    },
+    "directory1C": {
+        "path": "D:/tickets/files/nemo/directory1C/",
+        "pathDocker": "/tmp/tickets/files/nemo/directory1C/",
+        "mainPath": "/tmp/tickets/files/nemo/directory1C/"
+    },
+    "samba": {
+        "server": "//10.0.50.92/aeroexpress",
+        "directory": "/test/nemo1C/",
+        "user": "svc-newonline-aeroex",
+        "password": "Xvdf5@2gd",
+        "domain": "zcts"
+    },
+    "suppliers": [
+        "AEROFLOTNDC"
+    ],
+    "permitedStatuses": [
+        "ticket",
+        "cancelled",
+        "refunded",
+        "exchanged"
+    ]
+}

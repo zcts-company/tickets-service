@@ -1,20 +1,20 @@
 import express, { Response } from "express";
-import config from "../config/config.mjs" //assert { type: "json" };;
+//import config from "../config/config_old.mjs" //assert { type: "json" };;
 import auth from "../middleware/Authentification.mjs";
 import { TravellineWebService } from "../web-service/TravellineWebService.mjs";
 import { BookingResponse } from "../types/BookingResponse.mjs";
 import { nameOfFile } from "../Travelline.mjs";
 import asyncHandler from 'express-async-handler'
 import { TravellineTransport } from "../transport-service/TravellineTransport.mjs";
-import { fileConverterXml, fileService} from "../../../../config/services.mjs";
+import { fileConverterXml, fileService} from "../../../../instances/services.mjs";
 import { logger } from "../../../../common/logging/Logger.mjs";
-
+import config from "../../../../config/hotel/travelline.json" assert {type: 'json'}
 
 export const handService = express.Router();
 
 const webService = new TravellineWebService();
 const transportService:TravellineTransport = new TravellineTransport();
-const currentDirectory = config.fileOutput.path
+const currentDirectory = config.fileOutput.mainPath
 
 handService.post('/hand-create',auth(),asyncHandler( 
     

@@ -1,4 +1,4 @@
-import {config} from "./config/config.mjs" //assert { type: "json" }
+//import {config} from "./config/config.mjs" //assert { type: "json" }
 import { AirServiceServer } from "../interfaces/AirServiceServer.mjs";
 import express from "express";
 import auth from "./midleware/Authentification.mjs";
@@ -9,9 +9,9 @@ import cors from 'cors'
 import { NemoTransportService } from "./transport/NemoTransportService.mjs";
 import setArchivePath from "./midleware/SetArchivePath.mjs";
 import errorHandler from "../../../common/middleware/errorHandler.mjs";
-import { fileService} from "../../../config/services.mjs";
+import { fileService} from "../../../instances/services.mjs";
 import { logger } from "../../../common/logging/Logger.mjs";
-
+import config from "../../../config/air/nemo.json" assert {type: 'json'}
 
 export class Nemo implements AirServiceServer {
     
@@ -30,14 +30,14 @@ export class Nemo implements AirServiceServer {
         this.server.use(bodyParser.json());
         this.transport = new NemoTransportService()
         this.fileService = fileService;
-        this.currentDirectory = config.fileOutput.path
-        this.archiveDirectory = config.fileArhive.path
-        this.directory1C = config.directory1C.path
-        this.currentArchiveDirectory = `${config.fileArhive}${new Date().toLocaleDateString().replace(new RegExp('[./]', 'g'),"-")}/`;
+        this.currentDirectory = config.fileOutput.mainPath
+        this.archiveDirectory = config.fileArhive.mainPath
+        this.directory1C = config.directory1C.mainPath
+        this.currentArchiveDirectory = `${config.fileArhive.mainPath}${new Date().toLocaleDateString().replace(new RegExp('[./]', 'g'),"-")}/`;
     }
 
     getServiceName(): string {
-        return config.name
+        return config.nameService
     }
     
     async startServer(port: number): Promise<void> {
@@ -70,8 +70,8 @@ export class Nemo implements AirServiceServer {
 
         setInterval(() => {
             logger.trace(`[NEMO TRAVEL] Step transport service of nemo travel`);
-            this.transport.sendTo1C(this.currentArchiveDirectory)
-            //this.transport.sendTo1CSamba(this.currentArchiveDirectory)
+            //this.transport.sendTo1C(this.currentArchiveDirectory)
+            this.transport.sendTo1CSamba(this.currentArchiveDirectory)
 
         },config.intervalSending * 1000)
         
@@ -82,7 +82,7 @@ export class Nemo implements AirServiceServer {
         // dateFrom = new Date(2024,4,15,0,0,0,1)
         // dateTo = new Date(2024,4,15,23,59,59,0)
         logger.info(`[NEMO TRAVEL] Server recived date from archive path: ${date.toLocaleDateString()}`);
-        this.currentArchiveDirectory = `${config.fileArhive.path}${date.toLocaleDateString().replace(new RegExp('[./]', 'g'),"-")}/`;
+        this.currentArchiveDirectory = `${config.fileArhive.mainPath}${date.toLocaleDateString().replace(new RegExp('[./]', 'g'),"-")}/`;
         logger.info(`[NEMO TRAVEL] Cerrent archive path setted: ${this.currentArchiveDirectory}`);
         
         const directoryArhiveExist:boolean = await this.fileService.pathExsist(this.currentArchiveDirectory);

@@ -1,9 +1,9 @@
 {
-    "main":{
-        "interval":5,
-        "ports":{
-            "nemo":48659,
-            "travelline_hand":48658
+    "main": {
+        "interval": 5,
+        "ports": {
+            "nemo": 48659,
+            "travelline_hand": 48658
         }
     }
 }
