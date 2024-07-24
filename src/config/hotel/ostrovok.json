@@ -1,0 +1,33 @@
+{
+    "name": "[Ostrovok ticket service]",
+    "nameProvider": "ostrovok",
+    "checkUpdates": false,
+    "database": {
+        "orders": "corporate"
+    },
+    "fileOutput": {
+        "path": "D:/tickets/files/ostrovok/current/",
+        "pathDocker": "/tmp/tickets/files/ostrovok/current/",
+        "mainPath": "/tmp/tickets/files/ostrovok/current/"
+    },
+    "fileArhive": {
+        "path": "D:/tickets/files/ostrovok/archive/",
+        "pathDocker": "/tmp/tickets/files/ostrovok/archive/",
+        "mainPath": "/tmp/tickets/files/ostrovok/archive/"
+    },
+    "directory1C": {
+        "path": "D:/tickets/files/ostrovok/directory1C/",
+        "pathDocker": "/tmp/tickets/files/ostrovok/directory1C/",
+        "mainPath": "/tmp/tickets/files/ostrovok/directory1C/"
+    },
+    "samba": {
+        "server": "//10.0.50.92/aeroexpress",
+        "directory": "/test/ostrovok1C/",
+        "user": "svc-newonline-aeroex",
+        "password": "Xvdf5@2gd",
+        "domain": "zcts"
+    },
+    "baseUrl": "",
+    "reseration": "",
+    "apiKey": ""
+}

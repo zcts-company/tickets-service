@@ -66,10 +66,9 @@ export class Travelline implements HotelService,HotelServer{
     }
 
 
-    async run(dateFrom: Date, dateTo: Date) {
+    async run(dateFrom: Date, dateTo: Date):Promise<void> {
         this.checkDate(dateFrom)
-        logger.trace(`[TRAVELLINE] Service ${config.name} recent request to check reservation from date ${toDateForSQL(dateFrom)} to date ${toDateForSQL(dateTo)}`);     
-        
+            logger.trace("[TRAVELLINE] run iteration for check reservation: from - " +  toDateForSQL(dateFrom) + " to - " + toDateForSQL(dateTo))  
         this.currentArhivePath = `${this.arhiveDirectory}${dateTo.toLocaleDateString().replace(new RegExp('[./]', 'g'),"-")}/`;
         const directoryArhiveExist:boolean = await fileService.pathExsist(this.currentArhivePath);
         const directoryCurrentExist:boolean = await fileService.pathExsist(this.currentDirectory);
