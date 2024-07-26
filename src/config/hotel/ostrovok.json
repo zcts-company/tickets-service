@@ -5,6 +5,7 @@
     "database": {
         "orders": "corporate"
     },
+    "countCheckDays":2,
     "fileOutput": {
         "path": "D:/tickets/files/ostrovok/current/",
         "pathDocker": "/tmp/tickets/files/ostrovok/current/",

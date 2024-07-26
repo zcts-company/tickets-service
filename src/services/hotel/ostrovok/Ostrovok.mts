@@ -8,23 +8,26 @@ import { fileService } from "../../../instances/services.mjs";
 export class Ostrovok implements HotelService{
     
     private currentDate:Date;
+    private beginCheckDate:Date;
     private currentDirectory:string
     private arhiveDirectory:string
     private currentArhivePath:string | undefined
     private directory1C:string
 
     constructor(){
-        this.currentDate = new Date() 
+        const now:Date = new Date();
+        this.currentDate = now; 
         this.currentDirectory = config.fileOutput.mainPath
         this.arhiveDirectory = config.fileArhive.mainPath
         this.directory1C = config.directory1C.mainPath
-
+        this.beginCheckDate = new Date(now.getFullYear(),now.getMonth(),now.getDate(),0,0,0,1)
         logger.info(`[OSTROVOK] Service ${config.name} created instance and started. Date: ${toDateForSQL(this.currentDate)}`);
     }
 
     async run(dateFrom: Date, dateTo: Date):Promise<void> {
-
+        this.beginCheckDate.setDate(dateFrom.getDate() - config.countCheckDays);
         logger.info("[OSTROVOK] run iteration for check reservation: from - " +  toDateForSQL(dateFrom) + " to - " + toDateForSQL(dateTo))
+        logger.info("[OSTROVOK] begin check date setted - " +  toDateForSQL(this.beginCheckDate));
         this.currentArhivePath = `${this.arhiveDirectory}${dateTo.toLocaleDateString().replace(new RegExp('[./]', 'g'),"-")}/`;
         const directoryArhiveExist:boolean = await fileService.pathExsist(this.currentArhivePath);
         const directoryCurrentExist:boolean = await fileService.pathExsist(this.currentDirectory);

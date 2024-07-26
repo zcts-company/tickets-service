@@ -12,6 +12,7 @@ import errorHandler from "../../../common/middleware/errorHandler.mjs";
 import { fileService} from "../../../instances/services.mjs";
 import { logger } from "../../../common/logging/Logger.mjs";
 import config from "../../../config/air/nemo.json" assert {type: 'json'}
+import mainConf from "../../../config/main-config.json" assert {type: 'json'}
 
 export class Nemo implements AirServiceServer {
     
@@ -70,9 +71,15 @@ export class Nemo implements AirServiceServer {
 
         setInterval(() => {
             logger.trace(`[NEMO TRAVEL] Step transport service of nemo travel`);
-            //this.transport.sendTo1C(this.currentArchiveDirectory)
-            this.transport.sendTo1CSamba(this.currentArchiveDirectory)
 
+            if(mainConf.main.transport.local){
+                this.transport.sendTo1C(this.currentArchiveDirectory)
+            }
+
+            if(mainConf.main.transport.smbserver){
+                this.transport.sendTo1CSamba(this.currentArchiveDirectory)
+            }
+            
         },config.intervalSending * 1000)
         
     }   

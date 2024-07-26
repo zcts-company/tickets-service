@@ -17,6 +17,7 @@ import errorHandler from "../../../common/middleware/errorHandler.mjs";
 import { handService } from "./router/HandService.mjs";
 import { logger } from "../../../common/logging/Logger.mjs";
 import config from "../../../config/hotel/travelline.json" assert {type: 'json'}
+import mainConf from "../../../config/main-config.json" assert {type: 'json'}
 
 export class Travelline implements HotelService,HotelServer{
 
@@ -29,6 +30,7 @@ export class Travelline implements HotelService,HotelServer{
     private currentArhivePath:string | undefined
     private directory1C:string
     private currentDate:Date;
+    private beginCheckDate:Date;
 
     constructor(){
         this.server = express();
@@ -43,6 +45,7 @@ export class Travelline implements HotelService,HotelServer{
         this.arhiveDirectory = config.fileArhive.mainPath
         this.directory1C = config.directory1C.mainPath
         this.currentDate = new Date() 
+        this.beginCheckDate = new Date(this.currentDate.getFullYear(),this.currentDate.getMonth(),this.currentDate.getDate(),0,0,0,1)
         logger.info(`[TRAVELLINE] Service ${config.name} created instance and started. Date: ${toDateForSQL(this.currentDate)}`);
     }
     startServer(port: Number): void {
@@ -69,6 +72,11 @@ export class Travelline implements HotelService,HotelServer{
     async run(dateFrom: Date, dateTo: Date):Promise<void> {
         this.checkDate(dateFrom)
             logger.trace("[TRAVELLINE] run iteration for check reservation: from - " +  toDateForSQL(dateFrom) + " to - " + toDateForSQL(dateTo))  
+        
+        this.beginCheckDate.setDate(this.currentDate.getDate() - config.countCheckDays)   
+        
+        logger.trace("[TRAVELLINE] begin check date setted - " +  toDateForSQL(this.beginCheckDate));
+
         this.currentArhivePath = `${this.arhiveDirectory}${dateTo.toLocaleDateString().replace(new RegExp('[./]', 'g'),"-")}/`;
         const directoryArhiveExist:boolean = await fileService.pathExsist(this.currentArhivePath);
         const directoryCurrentExist:boolean = await fileService.pathExsist(this.currentDirectory);
@@ -89,11 +97,18 @@ export class Travelline implements HotelService,HotelServer{
             logger.info(`[TRAVELLINE] Directory created: ${this.directory1C}`);
         }
         
-        const reservationFromBase:HotelCache = await this.database.getReservationsByDate(dateFrom,dateTo);
+        const reservationFromBase:HotelCache = await this.database.getReservationsByDate(this.beginCheckDate,dateTo);
         this.checkReservation(reservationFromBase.getCache()).then((list) => {
             this.requestToWebService(list)
-            //this.transportService.sendTo1C(this.currentArhivePath);
-            this.transportService.sendTo1CSamba(this.currentArhivePath);
+
+            if(mainConf.main.transport.local){
+                this.transportService.sendTo1CLocalPath(this.currentArhivePath)
+            }
+
+            if(mainConf.main.transport.smbserver){
+                this.transportService.sendTo1CSamba(this.currentArhivePath);
+            }
+
         });
         
     }
@@ -142,8 +157,8 @@ export class Travelline implements HotelService,HotelServer{
         for (let index = 0; index < arrayOfkeys.length; index++) {
             const reservation = reservationFromBase.get(arrayOfkeys[index])
             const fileName = nameOfFile(arrayOfkeys[index],reservation.updated)
+            const existArchive:boolean = await this.checkAllArchives(this.beginCheckDate,fileName,this.arhiveDirectory);
 
-            const existArchive:boolean = await fileService.pathExsist(this.currentArhivePath + `${fileName}.xml`);
             if(!existArchive){
                 const existCurrent:boolean = await fileService.pathExsist(this.currentDirectory + `${fileName}.xml`)
                 if (!existCurrent) {
@@ -153,6 +168,27 @@ export class Travelline implements HotelService,HotelServer{
         }
 
         return result;
+    }
+
+    private async checkAllArchives(beginDate:Date,filename:String, mainArchiveDirectory:string):Promise<boolean>{
+        let startDate:Date = new Date(beginDate)
+        let exist:boolean = false;
+        while(startDate < this.currentDate && !exist){
+            try {
+                logger.trace(`[TRAVELLINE] start checking exist of file: ${filename}.xml`)
+                const archivePath = `${mainArchiveDirectory}${startDate.toLocaleDateString().replace(new RegExp('[./]', 'g'),"-")}/`;
+                exist = await fileService.pathExsist(archivePath + `${filename}.xml`);
+                if(exist){
+                    logger.trace(`[TRAVELLINE] file: ${filename}.xml exist in directory: ${archivePath}`)
+                }
+                startDate.setDate(startDate.getDate() + 1)
+            } catch (error) {
+                logger.error(`[TRAVELLINE] ERROR CHECK ARHIVE: ${error}`)
+            }
+           
+        }
+
+        return exist;
     }
 
     

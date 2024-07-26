@@ -4,6 +4,10 @@
         "ports": {
             "nemo": 48659,
             "travelline_hand": 48658
+        },
+        "transport":{
+            "local":true,
+            "smbserver":false
         }
     }
 }
