@@ -8,7 +8,10 @@ export class TravellineWebService implements HotelWebService {
     constructor() {
         
     }
-
+    
+    getOrders(fromDate: Date, pageNumber: number): Promise<any> {
+        throw new Error("Method not implemented.");
+    }
 
      async getReservation(locator:string): Promise<BookingResponse|undefined>{
         let data:BookingResponse|undefined = undefined;

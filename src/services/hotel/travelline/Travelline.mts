@@ -18,6 +18,8 @@ import { handService } from "./router/HandService.mjs";
 import { logger } from "../../../common/logging/Logger.mjs";
 import config from "../../../config/hotel/travelline.json" assert {type: 'json'}
 import mainConf from "../../../config/main-config.json" assert {type: 'json'}
+import { RoomStay } from "./types/RoomStay.mjs";
+import { symbol } from "joi";
 
 export class Travelline implements HotelService,HotelServer{
 
@@ -139,6 +141,11 @@ export class Travelline implements HotelService,HotelServer{
 
 
     private createFile(reservationData: BookingResponse, key:string, updated:Date) {
+        
+        for (let index = 0; index < reservationData.booking.roomStays.length; index++) {
+            reservationData.booking.roomStays[index].ratePlan.description = replaceSymbols(reservationData.booking.roomStays[index].ratePlan.description)    
+        }
+
         const res:string = fileConverterXml.jsonToXml(reservationData);
         const fileName = nameOfFile(key,updated);
         const path = `${this.currentDirectory}${fileName}.xml`
@@ -208,4 +215,12 @@ export function nameOfFile(key:string,updated:Date) {
     return config.checkUpdates ? `${key}D${dateStr}T${timeStr}` : `${key}` 
 }
 
+
+function replaceSymbols(description: string): string {
+        description = description.replace(/<[^>]*>/g, ''); 
+        description = description.replace(/[\n\b\&nbsp\&amp]/g, '');  
+    return description;   
+}
+
+//"<p><b>Правила и ограничения</b></p>\n<p><u>Налоги</u></p>\n<p>В стоимость номера входят все налоги и местные сборы.</p>\n<p><u>Политика предоставления гарантий</u></p>\n<p>Для осуществления данного бронирования требуется кредитная карта. Если для регистрации вы используете дебетовую/кредитную карту, отель оставляет за собой право заблокировать полную предварительную стоимость заказа, включая непредвиденные расходы, до даты выписки; данная сумма может оставаться заблокированной в течение 72&nbsp;часов с даты выписки или дольше на усмотрение эмитента карты.</p>\n<p><u>Правила отмены</u></p>\n<p>Бесплатная отмена за 24 часа до даты и времени заезда в отель. При регистрации сотрудник стойки регистрации подтвердит дату вашей выписки. Тарифы указаны с учетом даты регистрации и продолжительности пребывания. В случае досрочной выписки цена может быть изменена.Мы оставляем за собой право отменить или изменить бронирование, если окажется, что клиент вовлечен в мошенническую или неуместную деятельность, либо в других случаях, когда бронирование содержит ошибку или выполнено по ошибке.</p>\n<p><u>Услуги, предоставляемые без дополнительной платы</u></p>\n<p>Всем гостям предоставляется бесплатный доступ к беспроводному Интернету в отеле.&nbsp;</p>"
 

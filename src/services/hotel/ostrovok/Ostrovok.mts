@@ -4,6 +4,9 @@ import {logger} from "../../../common/logging/Logger.mjs"
 import { toDateForSQL } from "../../../util/dateFunction.mjs";
 import { FileService } from "../../../common/file-service/FileService.mjs";
 import { fileService } from "../../../instances/services.mjs";
+import { HotelWebService } from "../interfaces/HotelWebService.mjs";
+import { OstrovokWebService } from "./service/OstrovokWebService.mjs";
+import { OrdersInfoRS } from "./model/OrdersInfoRS";
 
 export class Ostrovok implements HotelService{
     
@@ -13,6 +16,7 @@ export class Ostrovok implements HotelService{
     private arhiveDirectory:string
     private currentArhivePath:string | undefined
     private directory1C:string
+    private webService:HotelWebService
 
     constructor(){
         const now:Date = new Date();
@@ -20,6 +24,7 @@ export class Ostrovok implements HotelService{
         this.currentDirectory = config.fileOutput.mainPath
         this.arhiveDirectory = config.fileArhive.mainPath
         this.directory1C = config.directory1C.mainPath
+        this.webService = new OstrovokWebService();
         this.beginCheckDate = new Date(now.getFullYear(),now.getMonth(),now.getDate(),0,0,0,1)
         logger.info(`[OSTROVOK] Service ${config.name} created instance and started. Date: ${toDateForSQL(this.currentDate)}`);
     }
@@ -48,10 +53,20 @@ export class Ostrovok implements HotelService{
             logger.info(`[OSTROVOK] Directory created: ${this.directory1C}`);
         }
 
+        const orders:OrdersInfoRS = await this.webService.getOrders(this.beginCheckDate,1)
+        await printOrdders(orders)
+        
     }
 
     getServiceName(): string {
         return config.name;
     }
     
+}
+
+async function printOrdders(orders: OrdersInfoRS) {
+    orders.data.orders.forEach(order => {
+        logger.info(`InvoiceID of order: ${order.order_id} - ${order.invoice_id}`);
+        
+    })
 }

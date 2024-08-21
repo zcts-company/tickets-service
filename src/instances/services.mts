@@ -19,4 +19,5 @@ export const travellineHandServer:TicketServiceServer = new Travelline();
 
 export const nemoTavelServer:TicketServiceServer = new Nemo();
 
-export const services:TicketService[] = [travelline, ostrovok]
+export const services:TicketService[] = [travelline]
+//export const services:TicketService[] = [ostrovok]

@@ -1,6 +1,6 @@
 {
     "name": "[Ostrovok ticket service]",
-    "nameProvider": "ostrovok",
+    "nameProvider": "Ostrovok",
     "checkUpdates": false,
     "database": {
         "orders": "corporate"
@@ -28,7 +28,19 @@
         "password": "Xvdf5@2gd",
         "domain": "zcts"
     },
-    "baseUrl": "",
+    "baseUrl": "https://api.worldota.net/api/b2b/v3",
+    "ordedInfo":"/hotel/order/info/",
+    "invoice":"/ordergroup/document/invoice/download/",
+    "vaucher":"/hotel/order/document/voucher/download/",
+    "hotelInfo":"/hotel/info/",
     "reseration": "",
-    "apiKey": ""
+    "auth": {
+        "current_username":1957,
+        "current_password":"97a01bb4-450d-4bea-bd7d-8d21f9b43548",
+        "prod_username":1957,
+        "prod_password":"97a01bb4-450d-4bea-bd7d-8d21f9b43548",
+        "test_username":1090,
+        "test_password":"f0ed8db6-edab-478a-955b-3f244331adbe",
+        "LTD":"ZCTS"
+    }
 }

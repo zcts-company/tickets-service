@@ -2,7 +2,7 @@
     "serverHost":"dev30-db-1",
     "localhost":"localhost",
     "localContainerHost":"zcts-db-1",
-    "mainHost":"dev30-db-1",
+    "mainHost":"localhost",
     "port":5432,
     "login":"postgres",
     "password":"postgres",

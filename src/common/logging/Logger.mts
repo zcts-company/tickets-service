@@ -19,7 +19,7 @@ let transport = pino.transport({
 
 export let logger:Logger = pino(
     {
-        level: process.env.PINO_LOG_LEVEL || 'info',
+        level: process.env.PINO_LOG_LEVEL || 'trace',
         timestamp: pino.stdTimeFunctions.isoTime
     },
     transport
@@ -44,7 +44,7 @@ export function changeLoggerFileName(date:Date){
 
       logger = pino(
         {
-            level: process.env.PINO_LOG_LEVEL || 'info',
+            level: process.env.PINO_LOG_LEVEL || 'trace',
             timestamp: pino.stdTimeFunctions.isoTime
         },
         transport
