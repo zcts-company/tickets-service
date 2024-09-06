@@ -6,9 +6,10 @@ import { logger } from "../../../../common/logging/Logger.mjs";
 
 const auth = () => {
 
-    return (req:any,res:any,next:any) => {
+    return (req:Request,res:any,next:any) => {
         logger.info('Request from NemoBackOffice. Middleware autorization')
         logger.warn("Autorization not implemented")
+        logger.warn(req.header('Authorization'))
         // const authHeader = req.header('Authorization');
         // if(authHeader && authHeader.startsWith(BEARER)){
         //     const accessToken = authHeader.substring(BEARER.length);

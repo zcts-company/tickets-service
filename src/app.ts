@@ -1,10 +1,11 @@
-import { fileService, nemoTavelServer, services, travellineHandServer } from "./instances/services.mjs";
+import { fileService, nemoTavelServer, services, servicesIndividualInterval, travellineHandServer } from "./instances/services.mjs";
 import { TicketService } from "./services/interfaces/TicketService.mjs";
 import { toDateForSQL } from "./util/dateFunction.mjs";
 import express from "express"
 import { LOGGER_PATH } from "./common/constants/constant.mjs";
 import { changeLoggerFileName, getCurrentPath, logger } from "./common/logging/Logger.mjs";
 import config from "./config/main-config.json" assert {type: 'json'}
+import { array } from "joi";
 
 let counter = 0;
 let time = 0
@@ -17,10 +18,10 @@ logger.info(`[MAIN APP] Directory for logging: ${LOGGER_PATH} created`)
 
 setSearchDate();
 logger.info(`[MAIN APP] Start tickets service`)
+logger.info(`[MAIN APP] main interval of checking: ${config.main.interval} seconds`)
 
-
-nemoTavelServer.startServer(config.main.ports.nemo)
-travellineHandServer.startServer(config.main.ports.travelline_hand)
+config.main.servers.nemo.enabled ? nemoTavelServer.startServer(config.main.servers.nemo.port) : null
+config.main.servers.travelline_hand.enabled ? travellineHandServer.startServer(config.main.servers.travelline_hand.port) : null
 
 
     setInterval(() => {
@@ -38,6 +39,35 @@ travellineHandServer.startServer(config.main.ports.travelline_hand)
             service.run(dateFrom,dateTo);
         })
     },config.main.interval * 1000)
+
+
+    servicesIndividualInterval.forEach(async (service) => {
+        const arrayConfigs:string[] = []
+        // todo
+        //await getConfigs("./src/config",arrayConfigs) 
+        
+        // const config = await fileService.readFile()
+        // const interval = 
+        // setInterval(() => {
+
+        // },)
+    })
+
+
+    async function getConfigs(path:string, arrayConfigs:string[]):Promise<string[]>{
+        const array:string[] = await fileService.readDiretory(path)
+        const strJsonFlag:string = ".json"
+        array.forEach(async (elem) => {
+            if(elem.includes(strJsonFlag)){
+                arrayConfigs.push(path + "/" + elem)
+            } else {
+                path = path + "/" + elem;
+                await getConfigs(path,arrayConfigs)
+            }
+        })
+        return arrayConfigs
+    }
+
 
     function setSearchDate(){      
         const now = new Date()  

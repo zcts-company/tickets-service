@@ -1,17 +1,20 @@
 import pino from "pino";
-import type { DestinationStream, Logger, TransportMultiOptions } from "pino";
-import { LOGGER_PATH } from "../constants/constant.mjs";
+import type {Logger} from "pino";
+import config from "../../config/main-config.json" assert {type: 'json'} 
 
 
-let currentPath:string = `${LOGGER_PATH}${new Date().toLocaleDateString().replace(new RegExp('[./]', 'g'),"_")}.log`
+
+let currentPath:string = `${config.main.loggerPath}${new Date().toLocaleDateString().replace(new RegExp('[./]', 'g'),"_")}.log`
 
 let transport = pino.transport({
     targets: [
       {
+        level:process.env.PINO_LOG_LEVEL || "info",
         target: 'pino-pretty',
         options: { destination: currentPath},
       },
       {
+        level:process.env.PINO_LOG_LEVEL || "info",
         target: 'pino-pretty' // по-умолчанию логирует в стандартный вывод
       },
     ],
@@ -19,7 +22,7 @@ let transport = pino.transport({
 
 export let logger:Logger = pino(
     {
-        level: process.env.PINO_LOG_LEVEL || 'trace',
+        level: process.env.PINO_LOG_LEVEL || "info",
         timestamp: pino.stdTimeFunctions.isoTime
     },
     transport
@@ -28,15 +31,17 @@ export let logger:Logger = pino(
 
 export function changeLoggerFileName(date:Date){
 
-      currentPath = `${LOGGER_PATH}${`${date.toLocaleDateString().replace(new RegExp('[./]', 'g'),"_")}.log`}`
+      currentPath = `${config.main.loggerPath}${`${date.toLocaleDateString().replace(new RegExp('[./]', 'g'),"_")}.log`}`
 
       transport = pino.transport({
           targets: [
               {
+                level:process.env.PINO_LOG_LEVEL || "info",
                 target: 'pino-pretty',
                 options: { destination: currentPath},
               },
               {
+                level:process.env.PINO_LOG_LEVEL || "info",
                 target: 'pino-pretty' // по-умолчанию логирует в стандартный вывод
               },
            ],
@@ -44,7 +49,7 @@ export function changeLoggerFileName(date:Date){
 
       logger = pino(
         {
-            level: process.env.PINO_LOG_LEVEL || 'trace',
+            level: process.env.PINO_LOG_LEVEL || "info",
             timestamp: pino.stdTimeFunctions.isoTime
         },
         transport

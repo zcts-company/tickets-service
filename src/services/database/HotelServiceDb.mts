@@ -21,7 +21,8 @@ export class HotelServiceDb {
                 database:databaseName,
                 host:config.mainHost,
                 port:config.port,
-                max: 2
+                max: 0,
+                idleTimeoutMillis: 8000,
             }) 
             this.reservationCache = cache; 
             this.currentDate = new Date() 
@@ -44,8 +45,8 @@ export class HotelServiceDb {
        }
 
        async getReservationsByDate(dateFrom:Date, dateTo:Date){
-        let from = toDateForSQL(dateFrom)
-        let to = toDateForSQL(dateTo)
+          let from = toDateForSQL(dateFrom)
+          let to = toDateForSQL(dateTo)
 
         const query:string = `SELECT o.id,
                                      o.locator,
@@ -55,21 +56,28 @@ export class HotelServiceDb {
                               LEFT JOIN orders_type_hotel h ON h.id = o.id
                               WHERE o.${this.checkUpdate ? 'updated' : 'created'} > '${from}' AND o.${this.checkUpdate ? 'updated' : 'created'} < '${to}' AND h.reservation notNull and o.service = '${config.service.name}'`
         logger.trace(`[DATABASE SERVICE] Starting query for database. QUERY: ${query}`)
-        this.pool.query(query, async (err:any, res:any) => {
-            if (err) {
-              logger.error(`[DATABASE SERVICE] ${err}`)
-              return 'Error query';
-            }    
-            
-            this.checkDate(dateFrom)
-                 
-            
-            await this.checkAndSetReservationCache(res.rows)
-            
-            return res
-          })
+        try {
+          this.pool.query(query, async (err:any, res:any) => {
+              if (err) {
+                logger.error(`[DATABASE SERVICE] ${err}`)
+                return 'Error query';
+              } else {
+                logger.trace(`[DATABASE SERVICE] succsess query: rows ${res.rows.length}`)
+                
+              }    
+              
+              this.checkDate(dateFrom)
+                   
+              
+              await this.checkAndSetReservationCache(res.rows)
+              
+              return res
+            })
+        } catch (error:any) {
+            logger.error(`[DATABASE SERVICE] error: ${error.getMessage()}`)
+        }
 
-        return this.reservationCache;  
+        return this.reservationCache;       
 
     }
 
@@ -84,8 +92,9 @@ export class HotelServiceDb {
     private async checkAndSetReservationCache(rows:any[]){
             let count:number = 0;
             rows.forEach((row) => {
+              // добавляем в кэш сервиса только записи из базы у который provider равен имени сервиса из config
               if(row.reservation.provider.includes(this.reservationCache.getProviderName())){
-                logger.trace(`[DATABASE SERVICE] recived reservation from database of provider: ${row.reservation.provider}`)
+                logger.info(`[DATABASE SERVICE] recived reservation from database of provider: ${row.reservation.provider}`)
                 if(row.reservation.locator){
                   logger.trace(`[DATABASE SERVICE] recived reservation from database with locator: ${row.reservation.locator}`)
                   const reservation = this.reservationCache.getItem(row.reservation.locator);
@@ -97,6 +106,8 @@ export class HotelServiceDb {
                     }
                 }
 
+              } else {
+                  logger.trace(`[DATABASE SERVICE] recived reservation from database of provider: ${row.reservation.provider} for service ${this.reservationCache.getProviderName()}`)
               }
                
             })

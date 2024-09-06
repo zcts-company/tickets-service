@@ -19,4 +19,12 @@ export class FileService {
         await fs.ensureDir(path);
     }
 
+    async readFile(path:string){
+       return await fs.readFile(path)
+    }
+
+    async readDiretory(path:string){
+        return await fs.readdir(path);
+    }
+
 }

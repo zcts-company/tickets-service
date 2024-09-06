@@ -2,10 +2,13 @@
     "serverHost":"dev30-db-1",
     "localhost":"localhost",
     "localContainerHost":"zcts-db-1",
-    "mainHost":"localhost",
+    "onlineHost":"10.12.10.28",
+    "mainHost":"10.12.10.28",
     "port":5432,
-    "login":"postgres",
-    "password":"postgres",
+    "loginOnline":"zcts",
+    "passwordOnline":"YThz5REgN55M8Wz",
+    "login":"zcts",
+    "password":"YThz5REgN55M8Wz",
     "service":{
         "name":"hotel"
     }
