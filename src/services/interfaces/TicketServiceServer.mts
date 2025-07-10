@@ -1,7 +1,7 @@
 
 export interface TicketServiceServer  {
     
-    startServer(port:Number):void;
+    startServer():void;
     getServiceName():string;
     setCurrentArchiveDirectory(date:Date):void;
 

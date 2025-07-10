@@ -1,14 +1,6 @@
-//import {config} from "./config/config.mjs" //assert { type: "json" }
 import { AirServiceServer } from "../interfaces/AirServiceServer.mjs";
-import express from "express";
-import auth from "./midleware/Authentification.mjs";
-import { service } from "./router/service.mjs";
 import { FileService } from "../../../common/file-service/FileService.mjs";
-import bodyParser from "body-parser";
-import cors from 'cors'
 import { NemoTransportService } from "./transport/NemoTransportService.mjs";
-import setArchivePath from "./midleware/SetArchivePath.mjs";
-import errorHandler from "../../../common/middleware/errorHandler.mjs";
 import { fileService} from "../../../instances/services.mjs";
 import { logger } from "../../../common/logging/Logger.mjs";
 import config from "../../../config/air/nemo.json" assert {type: 'json'}
@@ -16,7 +8,6 @@ import mainConf from "../../../config/main-config.json" assert {type: 'json'}
 
 export class Nemo implements AirServiceServer {
     
-    private server:any;
     private fileService:FileService;
     private archiveDirectory:string;
     private currentDirectory:string;
@@ -25,10 +16,10 @@ export class Nemo implements AirServiceServer {
     private transport:NemoTransportService;
 
     constructor(){
-        this.server = express();
-        this.server.use(cors())
-        this.server.use(bodyParser.urlencoded({extended: true}));
-        this.server.use(bodyParser.json());
+        // this.server = express();
+        // this.server.use(cors())
+        // this.server.use(bodyParser.urlencoded({extended: true}));
+        // this.server.use(bodyParser.json());
         this.transport = new NemoTransportService()
         this.fileService = fileService;
         this.currentDirectory = config.fileOutput.mainPath
@@ -41,7 +32,7 @@ export class Nemo implements AirServiceServer {
         return config.nameService
     }
     
-    async startServer(port: number): Promise<void> {
+    async startServer(): Promise<void> {
         const directoryArhiveExist:boolean = await this.fileService.pathExsist(this.archiveDirectory);
         const directoryCurrentExist:boolean = await this.fileService.pathExsist(this.currentDirectory);
         const directory1CExist:boolean = await this.fileService.pathExsist(this.directory1C);
@@ -61,13 +52,13 @@ export class Nemo implements AirServiceServer {
             logger.info(`[NEMO TRAVEL] Directory created: ${this.directory1C}`);
         }
           
-         this.server.listen(port,() => {
-                logger.info(`[NEMO TRAVEL] Server Nemo travel tickets listening on port ${port}`);
-                this.server.use(errorHandler);
-         });
+        //  this.server.listen(port,() => {
+        //         logger.info(`[NEMO TRAVEL] Server Nemo travel tickets listening on port ${port}`);
+        //         this.server.use(errorHandler);
+        //  });
 
-        this.server.use("",setArchivePath(this.currentArchiveDirectory)) 
-        this.server.use("/nemo/service",service)
+        // this.server.use("",setArchivePath(this.currentArchiveDirectory)) 
+        // this.server.use("/nemo/service",service)
 
         setInterval(() => {
             logger.trace(`[NEMO TRAVEL] Step transport service of nemo travel`);

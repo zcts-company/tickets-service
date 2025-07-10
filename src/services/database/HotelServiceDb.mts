@@ -1,7 +1,6 @@
 
 import pg from "pg"
 const Pool =  pg.Pool;
-//import {config} from "./config/db.mjs" //assert { type: "json" };;
 import { HotelCache } from "../../common/cache/HotelCache.mjs";
 import { toDateForSQL } from "../../util/dateFunction.mjs";
 import { logger } from "../../common/logging/Logger.mjs";

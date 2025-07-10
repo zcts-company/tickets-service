@@ -1,11 +1,17 @@
-import { fileService, nemoTavelServer, services, servicesIndividualInterval, travellineHandServer } from "./instances/services.mjs";
+import { callBackServices, fileService, nemoTavelServer, services, servicesIndividualInterval} from "./instances/services.mjs";
 import { TicketService } from "./services/interfaces/TicketService.mjs";
 import { toDateForSQL } from "./util/dateFunction.mjs";
-import express from "express"
 import { LOGGER_PATH } from "./common/constants/constant.mjs";
 import { changeLoggerFileName, getCurrentPath, logger } from "./common/logging/Logger.mjs";
 import config from "./config/main-config.json" assert {type: 'json'}
-import { array } from "joi";
+
+
+import express from "express";
+import cors from "cors";
+import bodyParser from "body-parser";
+import errorHandler from "./common/middleware/errorHandler.mjs";
+import { mainRouter } from "./api/MainRouter.mjs";
+import auth from "./common/middleware/Authentification.mjs";
 
 let counter = 0;
 let time = 0
@@ -20,8 +26,25 @@ setSearchDate();
 logger.info(`[MAIN APP] Start tickets service`)
 logger.info(`[MAIN APP] main interval of checking: ${config.main.interval} seconds`)
 
-config.main.servers.nemo.enabled ? nemoTavelServer.startServer(config.main.servers.nemo.port) : null
-config.main.servers.travelline_hand.enabled ? travellineHandServer.startServer(config.main.servers.travelline_hand.port) : null
+    if(config.main.servers.hand.enabled){
+
+        const server = express();
+        server.use(cors())
+        server.use(bodyParser.urlencoded({extended: true}));
+        server.use(bodyParser.json());
+
+        server.listen(config.main.servers.hand.port,() => {
+                logger.info(`[HAND CHECK SERVER] Server for hand checing tickets listening on port ${config.main.servers.hand.port}`);
+                    server.use(errorHandler);
+            });
+
+        server.use("/api",auth(),mainRouter)
+
+    }
+
+    callBackServices.forEach(callbackService => {
+        callbackService.startServer()
+    })
 
 
     setInterval(() => {
@@ -44,13 +67,7 @@ config.main.servers.travelline_hand.enabled ? travellineHandServer.startServer(c
     servicesIndividualInterval.forEach(async (service) => {
         const arrayConfigs:string[] = []
         // todo
-        //await getConfigs("./src/config",arrayConfigs) 
-        
-        // const config = await fileService.readFile()
-        // const interval = 
-        // setInterval(() => {
-
-        // },)
+        // individual timer for services
     })
 
 

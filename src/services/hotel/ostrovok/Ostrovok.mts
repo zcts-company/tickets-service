@@ -53,7 +53,7 @@ export class Ostrovok implements HotelService{
             logger.info(`[OSTROVOK] Directory created: ${this.directory1C}`);
         }
 
-        const orders:OrdersInfoRS = await this.webService.getOrders(this.beginCheckDate,1)
+        const orders:OrdersInfoRS = await this.webService.getOrders(dateFrom,dateTo,1)
         await printOrdders(orders)
         
     }

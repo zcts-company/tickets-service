@@ -1,17 +1,18 @@
 {
     "main": {
         "transport":{
-            "local":false,
-            "smbserver":true
+            "local":true,
+            "smbserver":false
         },
         "loggerPath":"/var/log/ticket-services/",
+        "loggerLevel":"info",
         "interval": 5,
         "servers":{
             "nemo": {
-                "enabled":true,
+                "enabled":false,
                 "port":48659
                 },
-            "travelline_hand": {
+            "hand": {
                 "enabled":true,
                 "port":48658
                 }

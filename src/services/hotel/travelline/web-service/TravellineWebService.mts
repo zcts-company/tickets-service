@@ -1,6 +1,5 @@
 import { HotelWebService } from "../../interfaces/HotelWebService.mjs"
 import { BookingResponse } from "../types/BookingResponse.mjs"
-//import config from "../config/config_old.mjs" //assert { type: "json" };;
 import { logger } from "../../../../common/logging/Logger.mjs";
 import config from "../../../../config/hotel/travelline.json" assert {type: 'json'}
 export class TravellineWebService implements HotelWebService {
@@ -9,11 +8,11 @@ export class TravellineWebService implements HotelWebService {
         
     }
     
-    getOrders(fromDate: Date, pageNumber: number): Promise<any> {
+    getOrders(fromDate: Date, toDate: Date, pageNumber: number): Promise<any> {
         throw new Error("Method not implemented.");
     }
 
-     async getReservation(locator:string): Promise<BookingResponse|undefined>{
+    async getOrder(locator:string): Promise<BookingResponse|undefined>{
         let data:BookingResponse|undefined = undefined;
         try {
             const url = `${config.baseUrl}${config.reseration}${locator}`

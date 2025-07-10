@@ -1,0 +1,35 @@
+{
+    "name": "[TravelTech ticket service]",
+    "nameProvider": "traveltech",
+    "checkUpdates": false,
+    "database": {
+        "orders": "corporate"
+    },
+    "countCheckDays":1,
+    "fileOutput": {
+        "path": "D:/tickets/files/traveltech/current/",
+        "pathDocker": "/tmp/tickets/files/traveltech/current/",
+        "mainPath": "D:/tickets/files/traveltech/current/"
+    },
+    "fileArhive": {
+        "path": "D:/tickets/files/traveltech/archive/",
+        "pathDocker": "/tmp/tickets/files/traveltech/archive/",
+        "mainPath": "D:/tickets/files/traveltech/archive/"
+    },
+    "directory1C": {
+        "path": "D:/tickets/files/traveltech/directory1C/",
+        "pathDocker": "/tmp/tickets/files/traveltech/directory1C/",
+        "mainPath": "D:/tickets/files/traveltech/directory1C/"
+    },
+    "samba": {
+        "server": "//10.0.50.92/aeroexpress",
+        "directory": "/test/traveltech1C/",
+        "user": "svc-newonline-aeroex",
+        "password": "Xvdf5@2gd",
+        "domain": "zcts"
+    },
+    "baseUrl": "https://sboapi-sandbox.rtt.travel/api/",
+    "reserationList": "Orders/LoadList",
+    "reseration": "Orders/Load",
+    "apiKey": "AGN_8497_9a2e36ab81a2c6d69d5a633bf72d9a26_36_8147_5008a8e4-c01b-4d9d-ae53-c7d24671ddec@8497#b4ba3c91-65e3-4568-af0e-93519c69e40b"
+}

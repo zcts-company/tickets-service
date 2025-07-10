@@ -9,12 +9,12 @@ let currentPath:string = `${config.main.loggerPath}${new Date().toLocaleDateStri
 let transport = pino.transport({
     targets: [
       {
-        level:process.env.PINO_LOG_LEVEL || "info",
+        level:config.main.loggerLevel || "info",
         target: 'pino-pretty',
         options: { destination: currentPath},
       },
       {
-        level:process.env.PINO_LOG_LEVEL || "info",
+        level:config.main.loggerLevel || "info",
         target: 'pino-pretty' // по-умолчанию логирует в стандартный вывод
       },
     ],
@@ -22,7 +22,7 @@ let transport = pino.transport({
 
 export let logger:Logger = pino(
     {
-        level: process.env.PINO_LOG_LEVEL || "info",
+        level: config.main.loggerLevel || "info",
         timestamp: pino.stdTimeFunctions.isoTime
     },
     transport
@@ -36,12 +36,12 @@ export function changeLoggerFileName(date:Date){
       transport = pino.transport({
           targets: [
               {
-                level:process.env.PINO_LOG_LEVEL || "info",
+                level:config.main.loggerLevel || "info",
                 target: 'pino-pretty',
                 options: { destination: currentPath},
               },
               {
-                level:process.env.PINO_LOG_LEVEL || "info",
+                level:config.main.loggerLevel || "info",
                 target: 'pino-pretty' // по-умолчанию логирует в стандартный вывод
               },
            ],
@@ -49,7 +49,7 @@ export function changeLoggerFileName(date:Date){
 
       logger = pino(
         {
-            level: process.env.PINO_LOG_LEVEL || "info",
+            level: config.main.loggerLevel || "info",
             timestamp: pino.stdTimeFunctions.isoTime
         },
         transport

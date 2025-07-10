@@ -1,8 +1,8 @@
 
 export interface HotelWebService {
 
-    getReservation(locator:string):Promise<any>;
+    getOrder(locator:string):Promise<any>;
 
-    getOrders(fromDate:Date,pageNumber:number):Promise<any>;
+    getOrders(fromDate:Date, toDate:Date, pageNumber:number):Promise<any>;
     
 }

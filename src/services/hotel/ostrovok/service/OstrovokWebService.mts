@@ -9,7 +9,11 @@ import { HotelInfoRS } from "../model/HotelInfoRS";
 
 export class OstrovokWebService implements HotelWebService {
     
-    async getOrders(fromDate: Date, pageNumber:number): Promise<any> {
+    getOrder(locator: string): Promise<any> {
+        throw new Error("Method not implemented.");
+    }
+    
+    async getOrders(fromDate: Date, toDate:Date, pageNumber:number): Promise<any> {
         let data:OrdersInfoRS|undefined = undefined;
         const body:OrderInfoRQ = getBody(fromDate, pageNumber)
         let headers = this.getHeaders() 

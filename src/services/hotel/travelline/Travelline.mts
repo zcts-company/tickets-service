@@ -1,29 +1,21 @@
 
-import express from "express";
 import { HotelCache } from "../../../common/cache/HotelCache.mjs";
 import { fileConverterXml, fileService, hotelCacheTravelline} from "../../../instances/services.mjs";
 import { toDateForSQL } from "../../../util/dateFunction.mjs";
 import { HotelServiceDb } from "../../database/HotelServiceDb.mjs";
 import { HotelService } from "../interfaces/HotelService.mjs";
 import { HotelWebService } from "../interfaces/HotelWebService.mjs";
-//import config from "./config/config_old.mjs"
 import { TravellineTransport } from "./transport-service/TravellineTransport.mjs";
 import { BookingResponse } from "./types/BookingResponse.mjs";
 import { TravellineWebService } from "./web-service/TravellineWebService.mjs";
-import cors from "cors";
-import bodyParser from "body-parser";
-import { HotelServer } from "../interfaces/HotelServer.mjs";
-import errorHandler from "../../../common/middleware/errorHandler.mjs";
-import { handService } from "./router/HandService.mjs";
 import { logger } from "../../../common/logging/Logger.mjs";
 import config from "../../../config/hotel/travelline.json" assert {type: 'json'}
 import mainConf from "../../../config/main-config.json" assert {type: 'json'}
-import { RoomStay } from "./types/RoomStay.mjs";
-import { symbol } from "joi";
+import { nameOfFile } from "../../../util/fileFunction.mjs";
+import { replaceSymbols } from "../../../util/stringFunction.mjs";
 
-export class Travelline implements HotelService,HotelServer{
+export class Travelline implements HotelService{
 
-    private server:any;
     private database:HotelServiceDb
     private webService:HotelWebService
     private transportService:TravellineTransport;
@@ -35,11 +27,6 @@ export class Travelline implements HotelService,HotelServer{
     private beginCheckDate:Date;
 
     constructor(){
-        this.server = express();
-        this.server.use(cors())
-        this.server.use(bodyParser.urlencoded({extended: true}));
-        this.server.use(bodyParser.json());
-
         this.database = new HotelServiceDb(config.database.orders,hotelCacheTravelline,config.checkUpdates);
         this.webService = new TravellineWebService();
         this.transportService = new TravellineTransport()
@@ -50,21 +37,6 @@ export class Travelline implements HotelService,HotelServer{
         this.beginCheckDate = new Date(this.currentDate.getFullYear(),this.currentDate.getMonth(),this.currentDate.getDate(),0,0,0,1)
         logger.info(`[TRAVELLINE] Service ${config.name} created instance and started. Date: ${toDateForSQL(this.currentDate)}`);
     }
-    startServer(port: Number): void {
-
-        this.server.listen(port,() => {
-            logger.info(`[TRAVELLINE] Server travelline hand tickets listening on port ${port}`);
-            this.server.use(errorHandler);
-     });
-
-    this.server.use("/travelline/service",handService)
-
-        
-    }
-    setCurrentArchiveDirectory(date: Date): void {
-        throw new Error("Method not implemented.");
-    }
-
 
     getServiceName() {
         return config.name
@@ -73,7 +45,7 @@ export class Travelline implements HotelService,HotelServer{
 
     async run(dateFrom: Date, dateTo: Date):Promise<void> {
         this.checkDate(dateFrom)
-            logger.trace("[TRAVELLINE] run iteration for check reservation: from - " +  toDateForSQL(dateFrom) + " to - " + toDateForSQL(dateTo))  
+            logger.info("[TRAVELLINE] run iteration for check reservation: from - " +  toDateForSQL(dateFrom) + " to - " + toDateForSQL(dateTo))  
         
         this.beginCheckDate.setDate(this.currentDate.getDate() - config.countCheckDays)   
         
@@ -100,7 +72,7 @@ export class Travelline implements HotelService,HotelServer{
         }
         
         const reservationFromBase:HotelCache = await this.database.getReservationsByDate(this.beginCheckDate,dateTo);
-        this.checkReservation(reservationFromBase.getCache()).then((list) => {
+        this.checkReservation(reservationFromBase.getCache(),this.beginCheckDate,this.arhiveDirectory,this.currentDirectory).then((list) => {
             this.requestToWebService(list)
 
             if(mainConf.main.transport.local){
@@ -134,7 +106,7 @@ export class Travelline implements HotelService,HotelServer{
         Array.from(listReservation.keys()).forEach(async (key) => {
             const reservation:any = listReservation.get(key);
             const locator:string = reservation.reservation.locator;
-            const reservationData:BookingResponse = await this.webService.getReservation(locator);
+            const reservationData:BookingResponse = await this.webService.getOrder(locator);
             this.createFile(reservationData,key,reservation.updated)
         })
     }
@@ -147,7 +119,7 @@ export class Travelline implements HotelService,HotelServer{
         }
 
         const res:string = fileConverterXml.jsonToXml(reservationData);
-        const fileName = nameOfFile(key,updated);
+        const fileName = nameOfFile(key,updated,config.checkUpdates);
         const path = `${this.currentDirectory}${fileName}.xml`
         fileService.writeFile(path,res).then(() => {
             
@@ -157,17 +129,17 @@ export class Travelline implements HotelService,HotelServer{
     }
 
 
-     private async checkReservation(reservationFromBase: Map<string,any>) {
+     private async checkReservation(reservationFromBase: Map<string,any>,beginCheckDate:Date,arhiveDirectory:string, currentDirectory:string) {
         const arrayOfkeys = Array.from(reservationFromBase.keys())
         const result: Map<string,any> = new Map();
 
         for (let index = 0; index < arrayOfkeys.length; index++) {
             const reservation = reservationFromBase.get(arrayOfkeys[index])
-            const fileName = nameOfFile(arrayOfkeys[index],reservation.updated)
-            const existArchive:boolean = await this.checkAllArchives(this.beginCheckDate,fileName,this.arhiveDirectory);
+            const fileName = nameOfFile(arrayOfkeys[index],reservation.updated, config.checkUpdates)
+            const existArchive:boolean = await this.checkAllArchives(beginCheckDate,fileName,arhiveDirectory);
 
             if(!existArchive){
-                const existCurrent:boolean = await fileService.pathExsist(this.currentDirectory + `${fileName}.xml`)
+                const existCurrent:boolean = await fileService.pathExsist(currentDirectory + `${fileName}.xml`)
                 if (!existCurrent) {
                     result.set(arrayOfkeys[index],reservation)
                 }
@@ -199,26 +171,5 @@ export class Travelline implements HotelService,HotelServer{
         return exist;
     }
 
-    
-}
-
-export function nameOfFile(key:string,updated:Date) {
-        
-    let dateStr:string = ''
-    let timeStr:string = ''
-
-    if(config.checkUpdates){
-        dateStr = updated.toLocaleDateString().replace(new RegExp('[./]', 'g'),"_")
-        timeStr = updated.toLocaleTimeString().replace(new RegExp(':', 'g'),"_")
-    }
-    
-    
-    return config.checkUpdates ? `${key}D${dateStr}T${timeStr}` : `${key}` 
-}
-
-
-function replaceSymbols(description: string): string {
-        description = description.replace(/<[^>]*>/g, ''); 
-        description = description.replace(/[\n\b\&nbsp\&amp]/g, '');  
-    return description;   
+  
 }

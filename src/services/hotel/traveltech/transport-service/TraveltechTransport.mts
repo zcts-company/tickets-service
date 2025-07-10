@@ -1,9 +1,9 @@
 import fs from "fs-extra"
 import SambaClient from 'samba-client'
 import { logger } from "../../../../common/logging/Logger.mjs"
-import config from "../../../../config/hotel/travelline.json" assert {type: 'json'}
+import config from "../../../../config/hotel/traveltech.json" assert {type: 'json'}
 
-export class TravellineTransport {
+export class TraveltechTransport {
 
     private currentDirectory:string
     private directory1C:string
@@ -32,12 +32,12 @@ export class TravellineTransport {
                             const exists:boolean = await fs.pathExists(`${this.directory1C}${fileName}`)
                 
                             if(exists){
-                                logger.info(`[TRAVELLINE TRANSPORT] File ${fileName} sended to directory: ${this.directory1C}`);
+                                logger.info(`[TRAVELTECH TRANSPORT] File ${fileName} sended to directory: ${this.directory1C}`);
                                 await this.sendToArchive(currentArchive,fileName)
                             }
                     }catch (error:any) {
-                        logger.error(`[TRAVELLINE TRANSPORT] Directory ${this.directory1C} not exists or not available`)
-                        logger.error(`[TRAVELLINE TRANSPORT] ERROR: ${error.message}`)
+                        logger.error(`[TRAVELTECH TRANSPORT] Directory ${this.directory1C} not exists or not available`)
+                        logger.error(`[TRAVELTECH TRANSPORT] ERROR: ${error.message}`)
                     }
             })
            }
@@ -55,12 +55,12 @@ export class TravellineTransport {
                              const exists:boolean = await this.sambaClient.fileExists(config.samba.directory + fileName)
                  
                              if(exists){
-                                 logger.info(`[TRAVELLINE TRANSPORT] File ${this.currentDirectory + fileName} sended to directory (SAMBA SERVER:${config.samba.server}): ${config.samba.directory}`);
+                                 logger.info(`[TRAVELTECH TRANSPORT] File ${this.currentDirectory + fileName} sended to directory (SAMBA SERVER:${config.samba.server}): ${config.samba.directory}`);
                                  await this.sendToArchive(currentArchive,fileName)
                              }
                      }catch (error:any) {
-                         logger.error(`[TRAVELLINE TRANSPORT] Directory (SAMBA SERVER:${config.samba.server}) ${config.samba.directory} not exists or not available`)
-                         logger.error(`[TRAVELLINE TRANSPORT] ERROR: ${error.message}`)
+                         logger.error(`[TRAVELTECH TRANSPORT] Directory (SAMBA SERVER:${config.samba.server}) ${config.samba.directory} not exists or not available`)
+                         logger.error(`[TRAVELTECH TRANSPORT] ERROR: ${error.message}`)
                      }
              })
             }
@@ -75,12 +75,12 @@ export class TravellineTransport {
             const exists:boolean = await this.sambaClient.fileExists(config.samba.directory + fileName)
                  
             if(exists){
-               logger.info(`[TRAVELLINE TRANSPORT] File ${path + fileName} sended to directory (SAMBA SERVER:${config.samba.server}): ${config.samba.directory}`);
+               logger.info(`[TRAVELTECH TRANSPORT] File ${path + fileName} sended to directory (SAMBA SERVER:${config.samba.server}): ${config.samba.directory}`);
                this.removeFileFromCurrent(fileName)
             }
         }catch (error:any) {
-            logger.error(`[TRAVELLINE TRANSPORT] Directory (SAMBA SERVER:${config.samba.server}) ${config.samba.directory} not exists or not available`)
-            logger.error(`[TRAVELLINE TRANSPORT] ERROR: ${error.message}`)
+            logger.error(`[TRAVELTECH TRANSPORT] Directory (SAMBA SERVER:${config.samba.server}) ${config.samba.directory} not exists or not available`)
+            logger.error(`[TRAVELTECH TRANSPORT] ERROR: ${error.message}`)
         }
 
      }
@@ -90,7 +90,7 @@ export class TravellineTransport {
         await fs.copy(this.currentDirectory + fileName,currentArchive + fileName);
         const exists:boolean = await fs.pathExists(`${currentArchive}${fileName}`)
         if(exists){
-            logger.info(`[TRAVELLINE TRANSPORT] File ${fileName} sended to archive directory: ${currentArchive}`);
+            logger.info(`[TRAVELTECH TRANSPORT] File ${fileName} sended to archive directory: ${currentArchive}`);
             await this.removeFileFromCurrent(fileName)
       }
 
@@ -100,7 +100,7 @@ export class TravellineTransport {
        await fs.remove(`${this.currentDirectory}${fileName}`)
        const exist:boolean = await fs.pathExists(`${this.currentDirectory}${fileName}`)
             if(!exist){
-                logger.info(`[TRAVELLINE TRANSPORT] File ${fileName} removed from current directory: ${this.currentDirectory}`);
+                logger.info(`[TRAVELTECH TRANSPORT] File ${fileName} removed from current directory: ${this.currentDirectory}`);
             }
     }
 

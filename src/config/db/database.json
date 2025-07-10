@@ -3,12 +3,12 @@
     "localhost":"localhost",
     "localContainerHost":"zcts-db-1",
     "onlineHost":"10.12.10.28",
-    "mainHost":"10.12.10.28",
+    "mainHost":"localhost",
     "port":5432,
     "loginOnline":"zcts",
     "passwordOnline":"YThz5REgN55M8Wz",
-    "login":"zcts",
-    "password":"YThz5REgN55M8Wz",
+    "login":"postgres",
+    "password":"postgres",
     "service":{
         "name":"hotel"
     }

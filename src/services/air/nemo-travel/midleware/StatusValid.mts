@@ -4,7 +4,7 @@ import { logger } from "../../../../common/logging/Logger.mjs";
 export const statusValid = (req:Request,res:Response,next:any) => {
 
     if (!req.body.containsePermittedStatus) {
-        res.status(200); //test был 400
+        res.status(200);
         let errorMessage = `Order not have permitted statuses`
         if( typeof req.body.allStatuses == "object"){
             const allStatusesString:string = JSON.stringify(Object.fromEntries(req.body.allStatuses.entries()));

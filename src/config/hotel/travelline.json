@@ -5,21 +5,21 @@
     "database": {
         "orders": "corporate"
     },
-    "countCheckDays":2,
+    "countCheckDays":1,
     "fileOutput": {
         "path": "D:/tickets/files/travelline/current/",
         "pathDocker": "/tmp/tickets/files/travelline/current/",
-        "mainPath": "/tmp/tickets/files/travelline/current/"
+        "mainPath": "D:/tickets/files/travelline/current/"
     },
     "fileArhive": {
         "path": "D:/tickets/files/travelline/archive/",
         "pathDocker": "/tmp/tickets/files/travelline/archive/",
-        "mainPath": "/tmp/tickets/files/travelline/archive/"
+        "mainPath": "D:/tickets/files/travelline/archive/"
     },
     "directory1C": {
         "path": "D:/tickets/files/travelline/directory1C/",
         "pathDocker": "/tmp/tickets/files/travelline/directory1C/",
-        "mainPath": "/tmp/tickets/files/travelline/directory1C/"
+        "mainPath": "D:/tickets/files/travelline/directory1C/"
     },
     "samba": {
         "server": "//10.0.50.92/aeroexpress",

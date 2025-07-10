@@ -1,5 +1,4 @@
 import fs from "fs-extra"
-//import {config} from "../config/config.mjs"
 import SambaClient from "samba-client"
 import { logger } from "../../../../common/logging/Logger.mjs"
 import config from "../../../../config/air/nemo.json" assert {type: 'json'}
@@ -37,9 +36,7 @@ export class NemoTransportService {
                                 await this.sendToArchive(currentArchive,fileName)
                             }
                     }catch {
-                        logger.error(`[NEMOTRAVEL TRANSPORT] Directory ${this.directory1C} not exists or not available`)
-                        //throw new Error(`[NEMOTRAVEL TRANSPORT] Directory ${this.directory1C} not exists or not available`);
-                        
+                        logger.error(`[NEMOTRAVEL TRANSPORT] Directory ${this.directory1C} not exists or not available`)                        
                     }
             })
            }

@@ -1,8 +1,6 @@
 import { NextFunction, Request, Response } from "express"
 import { NemoOrder } from "../model/NemoOrder.mjs";
-//import {config} from "../config/config.mjs"
 import { logger } from "../../../../common/logging/Logger.mjs";
-import { number } from "joi";
 import config from "../../../../config/air/nemo.json" assert {type: 'json'}
 
 const checkSuppliers = () => {
@@ -15,7 +13,7 @@ const checkSuppliers = () => {
         const mapSuppliers:Map<number,string> = new Map();
 
         while(body.data.products["ID_FLT_" + counter]){
-            logger.trace(`[NEMO CHECK SUPLIERS] Check product : ${JSON.stringify(body.data.products["ID_FLT_" + counter])}`)
+            logger.trace(`[NEMO CHECK SUPPLIERS] Check product : ${JSON.stringify(body.data.products["ID_FLT_" + counter])}`)
             const supplier:string = body.data.products["ID_FLT_" + counter].info.supplier.system;
             mapSuppliers.set(counter,supplier)
             counter++;
@@ -31,7 +29,7 @@ const checkSuppliers = () => {
         req.body.allSuppliersPermitted = !helperSupplier.includes(false)
         req.body.suppliers = mapSuppliers;
 
-        logger.info(`[NEMO CHECK SUPLIERS] add supliers ${JSON.stringify(Object.fromEntries(mapSuppliers.entries()))} to body of request`)
+        logger.info(`[NEMO CHECK SUPPLIERS] add supliers ${JSON.stringify(Object.fromEntries(mapSuppliers.entries()))} to body of request`)
         
         next();
     }
