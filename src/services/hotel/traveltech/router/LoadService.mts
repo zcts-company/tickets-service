@@ -9,13 +9,13 @@ import { TraveltechTransport } from "../transport-service/TraveltechTransport.mj
 import { LoadResponse } from "../types/response/LoadResponse";
 import { nameOfFile } from "../../../../util/fileFunction.mjs";
 
-export const handService = express.Router();
+export const loadService = express.Router();
 
 const webService = new TraveltechWebService();
 const transportService:TraveltechTransport = new TraveltechTransport();
 const currentDirectory = config.fileOutput.mainPath
 
-handService.post('/check',asyncHandler( 
+loadService.post('/load',asyncHandler( 
     
     async(req:any, res:Response) => {
     
@@ -41,8 +41,8 @@ handService.post('/check',asyncHandler(
 
 async function createFile(reservationData: LoadResponse, key:string, updated:Date) {
     const res:string = fileConverterXml.jsonToXml(reservationData);
-    const fileName = nameOfFile(key,updated,config.checkUpdates) + "_hand";
-    const path = `${currentDirectory}${fileName}.xml`
+    const fileName = nameOfFile(key,updated,config.checkUpdates) + "_hand.xml";
+    const path = `${currentDirectory}${fileName}`
     fileService.writeFile(path,res).then(() => {
         
         logger.info(`[TRAVELTECH] File with name ${fileName}.xml created by hand in directory: ${currentDirectory}`);

@@ -26,15 +26,15 @@ setSearchDate();
 logger.info(`[MAIN APP] Start tickets service`)
 logger.info(`[MAIN APP] main interval of checking: ${config.main.interval} seconds`)
 
-    if(config.main.servers.hand.enabled){
+    if(config.main.servers.api.enabled){
 
         const server = express();
         server.use(cors())
         server.use(bodyParser.urlencoded({extended: true}));
         server.use(bodyParser.json());
 
-        server.listen(config.main.servers.hand.port,() => {
-                logger.info(`[HAND CHECK SERVER] Server for hand checing tickets listening on port ${config.main.servers.hand.port}`);
+        server.listen(config.main.servers.api.port,() => {
+                logger.info(`[API SERVER] Api server listening on port ${config.main.servers.api.port}`);
                     server.use(errorHandler);
             });
 
@@ -45,7 +45,6 @@ logger.info(`[MAIN APP] main interval of checking: ${config.main.interval} secon
     callBackServices.forEach(callbackService => {
         callbackService.startServer()
     })
-
 
     setInterval(() => {
         counter++;
@@ -62,29 +61,6 @@ logger.info(`[MAIN APP] main interval of checking: ${config.main.interval} secon
             service.run(dateFrom,dateTo);
         })
     },config.main.interval * 1000)
-
-
-    servicesIndividualInterval.forEach(async (service) => {
-        const arrayConfigs:string[] = []
-        // todo
-        // individual timer for services
-    })
-
-
-    async function getConfigs(path:string, arrayConfigs:string[]):Promise<string[]>{
-        const array:string[] = await fileService.readDiretory(path)
-        const strJsonFlag:string = ".json"
-        array.forEach(async (elem) => {
-            if(elem.includes(strJsonFlag)){
-                arrayConfigs.push(path + "/" + elem)
-            } else {
-                path = path + "/" + elem;
-                await getConfigs(path,arrayConfigs)
-            }
-        })
-        return arrayConfigs
-    }
-
 
     function setSearchDate(){      
         const now = new Date()  

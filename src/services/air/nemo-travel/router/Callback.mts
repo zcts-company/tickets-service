@@ -12,6 +12,7 @@ import supplierValid from "../midleware/SupplierValid.mjs";
 import checkStatus from "../midleware/CheckStatus.mjs";
 import statusValid from "../midleware/StatusValid.mjs";
 import config from "../../../../config/air/nemo.json" assert {type: 'json'}
+import { nameOfFile } from "../../../../util/fileFunction.mjs";
 export const callback = express.Router();
 
 const currentDirectory = config.fileOutput.mainPath
@@ -45,7 +46,7 @@ callback.post('/callback',auth(),valid,supplierValid,statusValid,asyncHandler(as
 
    try {
     const updated = new Date(req.body.data.lastModifiedDate);
-    const fileName = nameOfFile(req.body.params.id.toString(),updated);
+    const fileName = nameOfFile(req.body.params.id.toString(),updated,config.checkUpdates);
     const existToCurrentArchive = await fileService.pathExsist(`${req.currentArchivePath}${fileName}`);
     const existToCurrent = await fileService.pathExsist(`${currentDirectory}${fileName}`);
 
@@ -82,7 +83,7 @@ callback.post('/callback',auth(),valid,supplierValid,statusValid,asyncHandler(as
 async function createFile(order:NemoOrder, response:Response) {
     const res:string = fileConverterXml.jsonToXml(order);
     const updated = new Date(order.data.lastModifiedDate);
-    const fileName = nameOfFile(order.params.id.toString(),updated);
+    const fileName = nameOfFile(order.params.id.toString(),updated,config.checkUpdates);
     const path = `${currentDirectory}${fileName}.xml`
     fileService.writeFile(path,res).then(() => {
         
@@ -91,20 +92,6 @@ async function createFile(order:NemoOrder, response:Response) {
     })
 
     return path;
-}
-
-function nameOfFile(key:string,updated:Date) {
-        
-    let dateStr:string = ''
-    let timeStr:string = ''
-
-    if(config.checkUpdates){
-        dateStr = updated.toLocaleDateString().replace(new RegExp('[./]', 'g'),"_")
-        timeStr = updated.toLocaleTimeString().replace(new RegExp(':', 'g'),"_")
-    }
-    
-    
-    return config.checkUpdates ? `${key}D${dateStr}T${timeStr}` : `${key}.xml` 
 }
 
 

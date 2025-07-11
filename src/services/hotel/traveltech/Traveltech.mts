@@ -41,7 +41,7 @@ export class Traveltech implements HotelService{
 
     async run(dateFrom: Date, dateTo: Date):Promise<void> {
         this.checkDate(dateFrom)
-            logger.info("[TRAVELTECH] run iteration for check reservation: from - " +  toDateForSQL(dateFrom) + " to - " + toDateForSQL(dateTo))  
+            logger.trace("[TRAVELTECH] run iteration for check reservation: from - " +  toDateForSQL(dateFrom) + " to - " + toDateForSQL(dateTo))  
         
         this.beginCheckDate.setDate(this.currentDate.getDate() - config.countCheckDays)   
         

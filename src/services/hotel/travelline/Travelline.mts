@@ -45,7 +45,7 @@ export class Travelline implements HotelService{
 
     async run(dateFrom: Date, dateTo: Date):Promise<void> {
         this.checkDate(dateFrom)
-            logger.info("[TRAVELLINE] run iteration for check reservation: from - " +  toDateForSQL(dateFrom) + " to - " + toDateForSQL(dateTo))  
+            logger.trace("[TRAVELLINE] run iteration for check reservation: from - " +  toDateForSQL(dateFrom) + " to - " + toDateForSQL(dateTo))  
         
         this.beginCheckDate.setDate(this.currentDate.getDate() - config.countCheckDays)   
         

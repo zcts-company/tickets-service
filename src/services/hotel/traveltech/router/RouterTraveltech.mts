@@ -1,6 +1,6 @@
 import express, { Response } from "express";
-import { handService } from "./HandService.mjs";
+import { loadService } from "./LoadService.mjs";
 
 export const routerTraveltech = express.Router();
 
-routerTraveltech.use("/hand-check-service",handService)
+routerTraveltech.use("/load-service",loadService)

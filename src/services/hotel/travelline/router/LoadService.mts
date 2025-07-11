@@ -9,13 +9,13 @@ import config from "../../../../config/hotel/travelline.json" assert {type: 'jso
 import mainConfig from "../../../../config/main-config.json" assert {type: 'json'}
 import { nameOfFile } from "../../../../util/fileFunction.mjs";
 
-export const handService = express.Router();
+export const loadService = express.Router();
 
 const webService = new TravellineWebService();
 const transportService:TravellineTransport = new TravellineTransport();
 const currentDirectory = config.fileOutput.mainPath
 
-handService.post('/check',asyncHandler( 
+loadService.post('/load',asyncHandler( 
     
     async(req:any, res:Response) => {
     
@@ -43,8 +43,8 @@ handService.post('/check',asyncHandler(
 
 async function createFile(reservationData: BookingResponse, key:string, updated:Date) {
     const res:string = fileConverterXml.jsonToXml(reservationData);
-    const fileName = nameOfFile(key,updated,config.checkUpdates) + "_hand";
-    const path = `${currentDirectory}${fileName}.xml`
+    const fileName = nameOfFile(key,updated,config.checkUpdates) + "_hand.xml";
+    const path = `${currentDirectory}${fileName}`
     fileService.writeFile(path,res).then(() => {
         
         logger.info(`[TRAVELLINE] File with name ${fileName}.xml created by hand in directory: ${currentDirectory}`);
