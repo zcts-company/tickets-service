@@ -1,8 +1,8 @@
 {
     "main": {
         "transport":{
-            "local":false,
-            "smbserver":true
+            "local":true,
+            "smbserver":false
         },
         "loggerPath":"/var/log/ticket-services/",
         "loggerLevel":"info",

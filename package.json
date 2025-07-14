@@ -36,6 +36,7 @@
     "pg": "^8.11.5",
     "pino": "^9.1.0",
     "pino-pretty": "^11.1.0",
+    "raw-body": "^3.0.0",
     "samba-client": "^7.2.0",
     "smbclient": "^1.0.3",
     "xml-js": "^1.6.11",

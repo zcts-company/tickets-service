@@ -1,22 +1,22 @@
-import { AirServiceServer } from "../interfaces/AirServiceServer.mjs";
 import { FileService } from "../../../common/file-service/FileService.mjs";
-import { NemoTransportService } from "./transport/NemoTransportService.mjs";
 import { fileService} from "../../../instances/services.mjs";
 import { logger } from "../../../common/logging/Logger.mjs";
-import config from "../../../config/air/nemo.json" assert {type: 'json'}
+import config from "../../../config/rail/ufs.json" assert {type: 'json'}
 import mainConf from "../../../config/main-config.json" assert {type: 'json'}
+import { UFSTransport } from "./transport/UFSTransport";
+import { RailServiceServer } from "../interfaces/RailServiceServer";
 
-export class Nemo implements AirServiceServer {
+export class Ufs implements RailServiceServer {
     
     private fileService:FileService;
     private archiveDirectory:string;
     private currentDirectory:string;
     private currentArchiveDirectory:string;
     private directory1C:string;
-    private transport:NemoTransportService;
+    private transport:UFSTransport;
 
     constructor(){
-        this.transport = new NemoTransportService()
+        this.transport = new UFSTransport()
         this.fileService = fileService;
         this.currentDirectory = config.fileOutput.mainPath
         this.archiveDirectory = config.fileArhive.mainPath
@@ -35,21 +35,21 @@ export class Nemo implements AirServiceServer {
 
         if(!directoryArhiveExist){
             await this.fileService.createDirectory(this.archiveDirectory)
-            logger.info(`[NEMO TRAVEL] Directory created: ${this.archiveDirectory}`);
+            logger.info(`[UFS] Directory created: ${this.archiveDirectory}`);
         }
 
         if(!directoryCurrentExist){
             await this.fileService.createDirectory(this.currentDirectory)
-            logger.info(`[NEMO TRAVEL] Directory created: ${this.currentDirectory}`);
+            logger.info(`[UFS] Directory created: ${this.currentDirectory}`);
         }
 
         if(!directory1CExist){
             await this.fileService.createDirectory(this.directory1C)
-            logger.info(`[NEMO TRAVEL] Directory created: ${this.directory1C}`);
+            logger.info(`[UFS] Directory created: ${this.directory1C}`);
         }
           
         setInterval(() => {
-            logger.trace(`[NEMO TRAVEL] Step transport service of nemo travel`);
+            logger.trace(`[UFS] Step transport service of nemo travel`);
 
             if(mainConf.main.transport.local){
                 this.transport.sendTo1C(this.currentArchiveDirectory)
@@ -67,15 +67,15 @@ export class Nemo implements AirServiceServer {
         // for tests
         // dateFrom = new Date(2024,4,15,0,0,0,1)
         // dateTo = new Date(2024,4,15,23,59,59,0)
-        logger.info(`[NEMO TRAVEL] Server recived date from archive path: ${date.toLocaleDateString()}`);
+        logger.info(`[UFS] Server recived date from archive path: ${date.toLocaleDateString()}`);
         this.currentArchiveDirectory = `${config.fileArhive.mainPath}${date.toLocaleDateString().replace(new RegExp('[./]', 'g'),"-")}/`;
-        logger.info(`[NEMO TRAVEL] Cerrent archive path setted: ${this.currentArchiveDirectory}`);
+        logger.info(`[UFS] Cerrent archive path setted: ${this.currentArchiveDirectory}`);
         
         const directoryArhiveExist:boolean = await this.fileService.pathExsist(this.currentArchiveDirectory);
         
         if(!directoryArhiveExist){
             await this.fileService.createDirectory(this.currentArchiveDirectory)
-            logger.info(`[NEMO TRAVEL] Directory created by server methods: ${this.currentArchiveDirectory}`);
+            logger.info(`[UFS] Directory created by server methods: ${this.currentArchiveDirectory}`);
         }
     
     }

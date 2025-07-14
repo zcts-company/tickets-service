@@ -1,0 +1,27 @@
+{
+    "nameService": "UFS RAIL ticket service",
+    "checkUpdates": false,
+    "intervalSending": 5,
+    "fileOutput": {
+        "path": "D:/tickets/files/ufs/current/",
+        "pathDocker": "/tmp/tickets/files/ufs/current/",
+        "mainPath": "D:/tickets/files/ufs/current/"
+    },
+    "fileArhive": {
+        "path": "D:/tickets/files/ufs/archive/",
+        "pathDocker": "/tmp/tickets/files/ufs/archive/",
+        "mainPath": "D:/tickets/files/ufs/archive/"
+    },
+    "directory1C": {
+        "path": "D:/tickets/files/ufs/directory1C/",
+        "pathDocker": "/tmp/tickets/files/ufs/directory1C/",
+        "mainPath": "D:/tickets/files/ufs/directory1C/"
+    },
+    "samba": {
+        "server": "//10.0.50.92/aeroexpress",
+        "directory": "/test/ufs1C/",
+        "user": "svc-newonline-aeroex",
+        "password": "Xvdf5@2gd",
+        "domain": "zcts"
+    }
+}

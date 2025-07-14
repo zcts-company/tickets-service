@@ -80,18 +80,22 @@ callback.post('/callback',auth(),valid,supplierValid,statusValid,asyncHandler(as
 }))
 
 
-async function createFile(order:NemoOrder, response:Response) {
-    const res:string = fileConverterXml.jsonToXml(order);
+async function createFile(order: NemoOrder, response: Response): Promise<string> {
+  try {
+    const res: string = fileConverterXml.jsonToXml(order);
     const updated = new Date(order.data.lastModifiedDate);
-    const fileName = nameOfFile(order.params.id.toString(),updated,config.checkUpdates);
-    const path = `${currentDirectory}${fileName}.xml`
-    fileService.writeFile(path,res).then(() => {
-        
-        logger.info(`[NEMO TRAVEL] File with name ${fileName}.xml created in directory: ${currentDirectory}`);
-        
-    })
+    const fileName = nameOfFile(order.params.id.toString(), updated, config.checkUpdates);
+    const path = `${currentDirectory}${fileName}.xml`;
+
+    await fileService.writeFile(path, res);
+
+    logger.info(`[NEMO TRAVEL] File with name ${fileName}.xml created in directory: ${currentDirectory}`);
 
     return path;
+  } catch (err) {
+    logger.error(`[NEMO TRAVEL] Failed to create file: ${(err as Error).message}`);
+    throw new Error(`Failed to create Nemo XML file: ${(err as Error).message}`);
+  }
 }
 
 

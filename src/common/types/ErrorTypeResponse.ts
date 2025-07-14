@@ -1,4 +1,4 @@
-export type ErrorType = {
+export type ErrorTypeResponse = {
     status:number,
     description:string
 }

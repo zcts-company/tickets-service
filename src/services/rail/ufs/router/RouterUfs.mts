@@ -1,5 +1,6 @@
 import express, { Response } from "express";
+import { webHookService } from "./WedHookService.mjs";
 
 export const routerUfs = express.Router();
 
-// routerTraveltech.use("/hand-check-service",handService)
+routerUfs.use("/load-service",webHookService)

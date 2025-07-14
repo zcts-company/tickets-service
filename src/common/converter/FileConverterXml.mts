@@ -1,5 +1,5 @@
 import { json2xml } from "xml-js";
-import  xml2js  from "xml2js";
+import  xml2js, { parseStringPromise }  from "xml2js";
 
 export class FileConverterXml {
 
@@ -8,7 +8,7 @@ export class FileConverterXml {
 
     constructor(){
         this.builder = new xml2js.Builder();
-        this.version = '<xml version="1.0" encoding="utf-8">'          
+        this.version = '<?xml version="1.0" encoding="utf-8">'          
     }
 
 
@@ -22,4 +22,11 @@ export class FileConverterXml {
             return result;
         }
 
+    async xmlToJson(string:string): Promise<Object>{
+                return await parseStringPromise(string, {
+        explicitArray: false,
+        trim: true,
+        });
     }
+
+}

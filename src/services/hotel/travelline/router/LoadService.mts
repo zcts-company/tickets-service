@@ -8,6 +8,8 @@ import { logger } from "../../../../common/logging/Logger.mjs";
 import config from "../../../../config/hotel/travelline.json" assert {type: 'json'}
 import mainConfig from "../../../../config/main-config.json" assert {type: 'json'}
 import { nameOfFile } from "../../../../util/fileFunction.mjs";
+import { HandCheckReservation } from "../../../../common/types/HandCheckReservation";
+import { createHttpError } from "../../../../util/errorFunction";
 
 export const loadService = express.Router();
 
@@ -19,10 +21,15 @@ loadService.post('/load',asyncHandler(
     
     async(req:any, res:Response) => {
     
-        logger.trace(`[TRAVELLINE] Resived post request for hand check reservation file for locator: ${req.body}`);
+    const request: HandCheckReservation = req.body
+        
+    if(!request.locator){
+        throw createHttpError(400,`Missing 'locator' property in request body`)
+    }
+    
+    logger.trace(`[TRAVELLINE] Resived post request for hand check reservation file for locator: ${request.locator}`);
 
-   try {
-    const reservation:BookingResponse|undefined = await webService.getOrder(req.body.locator)
+    const reservation:BookingResponse|undefined = await webService.getOrder(request.locator)
     const updated = new Date();
 
     if(reservation){
@@ -32,30 +39,29 @@ loadService.post('/load',asyncHandler(
         res.send()
  
     }
-           
-   } catch (error) {
-         res.status(500);
-         logger.error(`[TRAVELLINE] error hand check of reservation ${error}`);
-         res.send()
-   }
-  
+          
 }))
 
-async function createFile(reservationData: BookingResponse, key:string, updated:Date) {
-    const res:string = fileConverterXml.jsonToXml(reservationData);
-    const fileName = nameOfFile(key,updated,config.checkUpdates) + "_hand.xml";
-    const path = `${currentDirectory}${fileName}`
-    fileService.writeFile(path,res).then(() => {
-        
-        logger.info(`[TRAVELLINE] File with name ${fileName}.xml created by hand in directory: ${currentDirectory}`);
 
-        if(mainConfig.main.transport.smbserver){
-            transportService.forceSendTo1CSamba(fileName,currentDirectory);
-        }
+async function createFile(reservationData: BookingResponse, key: string, updated: Date): Promise<string> {
+  try {
+    const res: string = fileConverterXml.jsonToXml(reservationData);
+    const fileName = nameOfFile(key, updated, config.checkUpdates) + "_hand.xml";
+    const path = `${currentDirectory}${fileName}`;
 
-    })
+    await fileService.writeFile(path, res);
+
+    logger.info(`[TRAVELLINE] File with name ${fileName} created by hand in directory: ${currentDirectory}`);
+
+    if (mainConfig.main.transport.smbserver) {
+      await transportService.forceSendTo1CSamba(fileName, currentDirectory);
+    }
 
     return path;
+  } catch (err) {
+    logger.error(`[TRAVELLINE] Failed to create file: ${err}`);
+    throw new Error(`Failed to create reservation file: ${(err as Error).message}`);
+  }
 }
 
 
