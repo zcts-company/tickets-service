@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node --experimental-specifier-resolution=node  --loader ts-node/esm ./src/app.ts | npx pino-pretty",
+    "start_test": "node --experimental-specifier-resolution=node  --loader ts-node/esm ./server_task/server.ts",
     "build": "tsc --build",
     "startprod": "node ./build/app.js | npx pino-pretty"
   },

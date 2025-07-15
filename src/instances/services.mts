@@ -8,7 +8,7 @@ import { FileService } from "../common/file-service/FileService.mjs";
 import { FileConverterXml } from "../common/converter/FileConverterXml.mjs";
 import { Ostrovok } from "../services/hotel/ostrovok/Ostrovok.mjs";
 import { Traveltech } from "../services/hotel/traveltech/Traveltech.mjs";
-import { Ufs } from "../services/rail/ufs/ufs.mjs";
+import { Ufs } from "../services/rail/ufs/Ufs.mjs";
 
 
 //common instances
@@ -27,6 +27,5 @@ export const ufsServer:TicketServiceServer = new Ufs()
  
 export const callBackServices:TicketServiceServer[] = [nemoTavelServer,ufsServer]
 
-// export const services:TicketService[] = [traveltech,travelline]
-export const services:TicketService[] = []
+export const services:TicketService[] = [traveltech,travelline]
 export const servicesIndividualInterval:TicketService[] = []

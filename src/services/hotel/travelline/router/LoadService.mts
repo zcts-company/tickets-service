@@ -9,7 +9,7 @@ import config from "../../../../config/hotel/travelline.json" assert {type: 'jso
 import mainConfig from "../../../../config/main-config.json" assert {type: 'json'}
 import { nameOfFile } from "../../../../util/fileFunction.mjs";
 import { HandCheckReservation } from "../../../../common/types/HandCheckReservation";
-import { createHttpError } from "../../../../util/errorFunction";
+import { createHttpError } from "../../../../util/errorFunction.mjs";
 
 export const loadService = express.Router();
 

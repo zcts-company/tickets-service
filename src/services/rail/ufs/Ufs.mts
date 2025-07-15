@@ -3,8 +3,8 @@ import { fileService} from "../../../instances/services.mjs";
 import { logger } from "../../../common/logging/Logger.mjs";
 import config from "../../../config/rail/ufs.json" assert {type: 'json'}
 import mainConf from "../../../config/main-config.json" assert {type: 'json'}
-import { UFSTransport } from "./transport/UFSTransport";
 import { RailServiceServer } from "../interfaces/RailServiceServer";
+import { UFSTransport } from "./transport/UFSTransport.mjs";
 
 export class Ufs implements RailServiceServer {
     

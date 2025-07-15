@@ -7,8 +7,8 @@ import mainConfig from "../../../../config/main-config.json" assert {type: 'json
 import { nameOfFile } from "../../../../util/fileFunction.mjs";
 import getRawBody from "raw-body";
 import { UFSOrder } from "../types/UFSOrder";
-import { UFSTransport } from "../transport/UFSTransport";
-import { createHttpError } from "../../../../util/errorFunction";
+import { UFSTransport } from "../transport/UFSTransport.mjs";
+import { createHttpError } from "../../../../util/errorFunction.mjs";
 
 export const webHookService = express.Router();
 

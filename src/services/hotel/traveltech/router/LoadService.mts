@@ -9,7 +9,7 @@ import { TraveltechTransport } from "../transport-service/TraveltechTransport.mj
 import { LoadResponse } from "../types/response/LoadResponse";
 import { nameOfFile } from "../../../../util/fileFunction.mjs";
 import { HandCheckReservation } from "../../../../common/types/HandCheckReservation";
-import { createHttpError } from "../../../../util/errorFunction";
+import { createHttpError } from "../../../../util/errorFunction.mjs";
 
 export const loadService = express.Router();
 
